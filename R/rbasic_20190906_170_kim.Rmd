@@ -24,8 +24,7 @@ The preview shows you a rendered HTML copy of the contents of the editor. Conseq
 
 #3.2 The very basics
 
-3.2.1 Objects
---------------
+##3.2.1 Objects
 
 One advantage of programming languages is that we can define variables and write expressions with these variables, similar to how we do so in math, but obtain a numeric solution. We will write out general code for the quadratic equation below, but if we are asked to solve [Math Processing Error], then we define:
 
@@ -56,7 +55,7 @@ We use the term object to describe stuff that is stored in R. Variables are exam
 
 
 
-3.2.2 The workspace
+##3.2.2 The workspace
 
 You can see all the variables saved in your workspace by typing:
 
@@ -78,7 +77,7 @@ Now since these values are saved in variables, to obtain a solution to our equat
 
 
 
-3.2.3 Functions
+##3.2.3 Functions
 
 There are many more prebuilt functions and even more can be added through packages. These functions do not appear in the workspace because you did not define them, but they are available for immediate use.
 
@@ -181,7 +180,7 @@ or
 
 
 
-3.2.4 Other prebuilt objects
+##3.2.4 Other prebuilt objects
 
 You can see all the available datasets by typing:
 
@@ -208,7 +207,7 @@ Inf+1
 
 
 
-3.2.5 Variable names
+##3.2.5 Variable names
 
 Some basic rules in R are that variable names have to start with a letter, can’t contain spaces and should not be variables that are predefined in R.
 
@@ -223,7 +222,7 @@ solution_2 <- (-b - sqrt(b^2 - 4*a*c)) / (2*a)
 
 
 
-3.2.6 Saving your workspace
+##3.2.6 Saving your workspace
 
 Values remain in the workspace until you end your session or erase them with the function rm.
 
@@ -235,7 +234,7 @@ Instead, we recommend you assign the workspace a specific name. You can do this 
 
 
 
-3.2.7 Motivating scripts
+##3.2.7 Motivating scripts
 
 To solve another equation, we can copy and paste the code above and then redefine the variables and recompute the solution:
 
@@ -249,7 +248,7 @@ c <- -1
 
 
 
-3.2.8 Commenting your code
+##3.2.8 Commenting your code
 
 If a line of R code starts with the symbol #, it is not evaluated. We can use this to write reminders of why we wrote particular code. For example, in the script above we could add:
 
@@ -267,7 +266,7 @@ c <- -1
 
 
 
-3.3 Exercises
+#3.3 Exercises
 
 1. What is the sum of the first 100 positive integers? The formula for the sum of integers 1 through n is n(n+1)/2 . Define n=100 and then use R to compute the sum of 1 through 100 using the formula. What is the sum?
 
