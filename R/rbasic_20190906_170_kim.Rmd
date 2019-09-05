@@ -22,9 +22,10 @@ The preview shows you a rendered HTML copy of the contents of the editor. Conseq
 
 
 
-3.2 The very basics
+#3.2 The very basics
 
 3.2.1 Objects
+--------------
 
 One advantage of programming languages is that we can define variables and write expressions with these variables, similar to how we do so in math, but obtain a numeric solution. We will write out general code for the quadratic equation below, but if we are asked to solve [Math Processing Error], then we define:
 
