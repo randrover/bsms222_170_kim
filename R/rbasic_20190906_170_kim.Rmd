@@ -3,20 +3,12 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
 
 ```{r}
-plot(cars)
+install.packages('dslabs')
 ```
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
-
 
 
 
@@ -270,26 +262,46 @@ c <- -1
 
 1. What is the sum of the first 100 positive integers? The formula for the sum of integers 1 through n is n(n+1)/2 . Define n=100 and then use R to compute the sum of 1 through 100 using the formula. What is the sum?
 
+```{r}
+n <- 100
+n*(n + 1)/2
+```
+
+
 2. Now use the same formula to compute the sum of the integers from 1 through 1,000.
+
+```{r}
+n <- 1000
+n*(n + 1)/2
+```
+
 
 3. Look at the result of typing the following code into R:
 
+```{r}
 n <- 1000
 x <- seq(1, n)
 sum(x)
+```
+
 
 Based on the result, what do you think the functions seq and sum do? You can use the help system:
 
-A. sum creates a list of numbers and seq adds them up.
+**A**. sum creates a list of numbers and seq adds them up.
 B. seq creates a list of numbers and sum adds them up.
 C. seq computes the difference between two arguments and sum computes the sum of 1 through 1000.
 D. sum always returns the same number.
 
 4. In math and programming, we say that we evaluate a function when we replace the argument with a given number. So if we type sqrt(4), we evaluate the sqrt function. In R, you can evaluate a function inside another function. The evaluations happen from the inside out. Use one line of code to compute the log, in base 10, of the square root of 100.
 
+```{r}
+log(sqrt(100), base=10)
+```
+
+
 5. Which of the following will always return the numeric value stored in x? You can try out examples and use the help system if you want.
 
-A. log(10^x)
+**A**. log(10^x)
 B. log10(x^10)
 C. log(exp(x))
 D. exp(log(x, base = 2))
@@ -634,15 +646,29 @@ A. The 51 states.
 
 B. The murder rates for all 50 states and DC.
 
-C. The state name, the abbreviation of the state name, the state’s region, and the state’s population and total number of murders for 2010.
+**C**. The state name, the abbreviation of the state name, the state’s region, and the state’s population and total number of murders for 2010.
 
 D. str shows no relevant information.
 
 2. What are the column names used by the data frame for these five variables?
 
+###state, abb, region, population, total
+
 3. Use the accessor $ to extract the state abbreviations and assign them to the object a. What is the class of this object?
 
+```{r}
+a <- murders$abb
+class(a)
+```
+
 4. Now use the square brackets to extract the state abbreviations and assign them to the object b. Use the identical function to determine if a and b are the same.
+
+```{r}
+b <- murders[["abb"]]
+identical(a, b)
+
+```
+
 
 5. We saw that the region column stores a factor. You can corroborate this by typing:
 
@@ -652,12 +678,19 @@ class(murders$region)
 
 With one line of code, use the function levels and length to determine the number of regions defined by this dataset.
 
+```{r}
+length(levels(murders$region))
+```
+
+
 6. The function table takes a vector and returns the frequency of each element. You can quickly see how many states are in each region by applying this function. Use this function in one line of code to create a table of states per region.
+
+```{r}
+table(murders$region)
+```
+
 
 
 
 done!
 
-```{r}
-install.packages('dslabs')
-```
