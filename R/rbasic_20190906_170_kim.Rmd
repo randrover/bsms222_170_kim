@@ -14,9 +14,9 @@ install.packages('dslabs')
 
 
 
-#3.2 The very basics
+# 3.2 The very basics
 
-##3.2.1 Objects
+## 3.2.1 Objects
 
 One advantage of programming languages is that we can define variables and write expressions with these variables, similar to how we do so in math, but obtain a numeric solution. We will write out general code for the quadratic equation below, but if we are asked to solve [Math Processing Error], then we define:
 
@@ -26,17 +26,17 @@ b <- 1
 c <- -1
 ```
 
-which stores the values for later use. We use <- to assign values to the variables.
-We can also assign values using = instead of <-, but we recommend against using = to avoid confusion.
+which stores the values for later use. We use `<-` to assign values to the variables.
+We can also assign values using `=` instead of `<-`, but we recommend against using `=` to avoid confusion.
 
-To see the value stored in a variable, we simply ask R to evaluate a and it shows the stored value:
+To see the value stored in a variable, we simply ask R to evaluate `a` and it shows the stored value:
 
 ```{r}
 a
 #> [1] 1
 ```
 
-A more explicit way to ask R to show us the value stored in a is using print like this:
+A more explicit way to ask R to show us the value stored in `a` is using `print` like this:
 
 ```{r}
 print(a)
@@ -47,7 +47,7 @@ We use the term object to describe stuff that is stored in R. Variables are exam
 
 
 
-##3.2.2 The workspace
+## 3.2.2 The workspace
 
 You can see all the variables saved in your workspace by typing:
 
@@ -56,7 +56,7 @@ ls()
 #> [1] "a"        "b"        "c"        "img_path" "murders"
 ```
 
-If you try to recover the value of a variable that is not in your workspace, you receive an error. For example, if you type x you will receive the following message: Error: object 'x' not found.
+If you try to recover the value of a variable that is not in your workspace, you receive an error. For example, if you type `x` you will receive the following message: `Error: object 'x' not found`.
 
 Now since these values are saved in variables, to obtain a solution to our equation, we use the quadratic formula:
 
@@ -69,13 +69,13 @@ Now since these values are saved in variables, to obtain a solution to our equat
 
 
 
-##3.2.3 Functions
+## 3.2.3 Functions
 
 There are many more prebuilt functions and even more can be added through packages. These functions do not appear in the workspace because you did not define them, but they are available for immediate use.
 
-In general, we need to use parentheses to evaluate a function. If you type ls, the function is not evaluated and instead R shows you the code that defines the function. If you type ls() the function is evaluated and, as seen above, we see objects in the workspace.
+In general, we need to use parentheses to evaluate a function. If you type `ls`, the function is not evaluated and instead R shows you the code that defines the function. If you type `ls()` the function is evaluated and, as seen above, we see objects in the workspace.
 
-Unlike ls, most functions require one or more arguments. Below is an example of how we assign an object to the argument of the function log. Remember that we earlier defined a to be 1:
+Unlike `ls`, most functions require one or more arguments. Below is an example of how we assign an object to the argument of the function `log`. Remember that we earlier defined `a` to be 1:
 
 ```{r}
 log(8)
@@ -84,7 +84,7 @@ log(a)
 #> [1] 0
 ```
 
-You can find out what the function expects and what it does by reviewing the very useful manuals included in R. You can get help by using the help function like this:
+You can find out what the function expects and what it does by reviewing the very useful manuals included in R. You can get `help` by using the help function like this:
 
 ```{r}
 help("log")
@@ -96,9 +96,9 @@ For most functions, we can also use this shorthand:
 ?log
 ```
 
-The help page will show you what arguments the function is expecting. For example, log needs x and base to run.
+The help page will show you what arguments the function is expecting. For example, `log` needs `x` and `base` to run.
 
-However, some arguments are required and others are optional. You can determine which arguments are optional by noting in the help document that a default value is assigned with =. Defining these is optional. For example, the base of the function log defaults to base = exp(1) making log the natural log by default.
+However, some arguments are required and others are optional. You can determine which arguments are optional by noting in the help document that a default value is assigned with `=`. Defining these is optional. For example, the base of the function `log` defaults to `base = exp(1)` making `log` the natural log by default.
 
 If you want a quick look at the arguments without opening the help system, you can type:
 
@@ -115,14 +115,14 @@ log(8, base = 2)
 #> [1] 3
 ```
 
-Note that we have not been specifying the argument x as such:
+Note that we have not been specifying the argument `x` as such:
 
 ```{r}
 log(x = 8, base = 2)
 #> [1] 3
 ```
 
-If no argument name is used, R assumes you are entering arguments in the order shown in the help file or by args. So by not using the names, it assumes the arguments are x followed by base:
+If no argument name is used, R assumes you are entering arguments in the order shown in the help file or by `args`. So by not using the names, it assumes the arguments are `x` followed by `base`:
 
 ```{r}
 log(8,2)
@@ -136,7 +136,7 @@ log(base = 2, x = 8)
 #> [1] 3
 ```
 
-To specify arguments, we must use =, and cannot use <-.
+To specify arguments, we must use `=`, and cannot use `<-`.
 
 There are some exceptions to the rule that functions need the parentheses to be evaluated. Among these, the most commonly used are the arithmetic and relational operators. For example:
 
@@ -172,7 +172,7 @@ or
 
 
 
-##3.2.4 Other prebuilt objects
+## 3.2.4 Other prebuilt objects
 
 You can see all the available datasets by typing:
 
@@ -199,11 +199,11 @@ Inf+1
 
 
 
-##3.2.5 Variable names
+## 3.2.5 Variable names
 
 Some basic rules in R are that variable names have to start with a letter, can’t contain spaces and should not be variables that are predefined in R.
 
-For example, don’t name one of your variables install.packages by typing something like install.packages <- 2.
+For example, don’t name one of your variables `install.packages` by typing something like `install.packages <- 2`.
 
 A nice convention to follow is to use meaningful words that describe what is stored, use only lower case, and use underscores as a substitute for spaces. For the quadratic equations, we could use something like this:
 
@@ -214,19 +214,19 @@ solution_2 <- (-b - sqrt(b^2 - 4*a*c)) / (2*a)
 
 
 
-##3.2.6 Saving your workspace
+## 3.2.6 Saving your workspace
 
-Values remain in the workspace until you end your session or erase them with the function rm.
+Values remain in the workspace until you end your session or erase them with the function `rm`.
 
 But workspaces also can be saved for later use. When you quit R, the programs asks you if you want to save your workspace. If you do save it, the next time you start R, the program will restore the workspace.
 
 We actually recommend against saving the workspace this way because, as you start working on different projects, it will become harder to keep track of what is saved.
 
-Instead, we recommend you assign the workspace a specific name. You can do this by using the function save or save.image. To load, use the function load. When saving a workspace, we recommend the suffix rda or RData. In RStudio, you can also do this by navigating to the Session tab and choosing Save Workspace as. You can later load it using the Load Workspace options in the same tab.
+Instead, we recommend you assign the workspace a specific name. You can do this by using the function `save` or `save.image`. To load, use the function `load`. When saving a workspace, we recommend the suffix `rda` or `RData`. In RStudio, you can also do this by navigating to the Session tab and choosing Save Workspace as. You can later load it using the Load Workspace options in the same tab.
 
 
 
-##3.2.7 Motivating scripts
+## 3.2.7 Motivating scripts
 
 To solve another equation, we can copy and paste the code above and then redefine the variables and recompute the solution:
 
@@ -240,9 +240,9 @@ c <- -1
 
 
 
-##3.2.8 Commenting your code
+## 3.2.8 Commenting your code
 
-If a line of R code starts with the symbol #, it is not evaluated. We can use this to write reminders of why we wrote particular code. For example, in the script above we could add:
+If a line of R code starts with the symbol `#`, it is not evaluated. We can use this to write reminders of why we wrote particular code. For example, in the script above we could add:
 
 ```{r}
 ## Code to compute solution to quadratic equation of the form ax^2 + bx + c
@@ -258,7 +258,7 @@ c <- -1
 
 
 
-#3.3 Exercises
+# 3.3 Exercises
 
 1. What is the sum of the first 100 positive integers? The formula for the sum of integers 1 through n is n(n+1)/2 . Define n=100 and then use R to compute the sum of 1 through 100 using the formula. What is the sum?
 
@@ -285,32 +285,32 @@ sum(x)
 ```
 
 
-Based on the result, what do you think the functions seq and sum do? You can use the help system:
+Based on the result, what do you think the functions `seq` and `sum` do? You can use the `help` system:
 
-**A**. sum creates a list of numbers and seq adds them up.
-B. seq creates a list of numbers and sum adds them up.
-C. seq computes the difference between two arguments and sum computes the sum of 1 through 1000.
-D. sum always returns the same number.
+**A**. `sum` creates a list of numbers and `seq` adds them up.
+B. `seq` creates a list of numbers and `sum` adds them up.
+C. `seq` computes the difference between two arguments and `sum` computes the sum of 1 through 1000.
+D. `sum` always returns the same number.
 
-4. In math and programming, we say that we evaluate a function when we replace the argument with a given number. So if we type sqrt(4), we evaluate the sqrt function. In R, you can evaluate a function inside another function. The evaluations happen from the inside out. Use one line of code to compute the log, in base 10, of the square root of 100.
+4. In math and programming, we say that we evaluate a function when we replace the argument with a given number. So if we type `sqrt(4)`, we evaluate the `sqrt` function. In R, you can evaluate a function inside another function. The evaluations happen from the inside out. Use one line of code to compute the log, in base 10, of the square root of 100.
 
 ```{r}
 log(sqrt(100), base=10)
 ```
 
 
-5. Which of the following will always return the numeric value stored in x? You can try out examples and use the help system if you want.
+5. Which of the following will always return the numeric value stored in `x`? You can try out examples and use the help system if you want.
 
-**A**. log(10^x)
-B. log10(x^10)
-C. log(exp(x))
-D. exp(log(x, base = 2))
+**A**. `log(10^x)`
+B. `log10(x^10)`
+C. `log(exp(x))`
+D. `exp(log(x, base = 2))`
 
 
 
-3.4 Data types
+# 3.4 Data types
 
-Variables in R can be of different types. For example, we need to distinguish numbers from character strings and tables from simple lists of numbers. The function class helps us determine what type of object we have:
+Variables in R can be of different types. For example, we need to distinguish numbers from character strings and tables from simple lists of numbers. The function `class` helps us determine what type of object we have:
 
 ```{r}
 a <- 2
@@ -320,11 +320,11 @@ class(a)
 
 
 
-3.5 Data frames
+# 3.5 Data frames
 
 The most common way of storing a dataset in R is in a data frame. Conceptually, we can think of a data frame as a table with rows representing observations and the different variables reported for each observation defining the columns. Data frames are particularly useful for datasets because we can combine different data types into one object.
 
-A large proportion of data analysis challenges start with data stored in a data frame. For example, we stored the data for our motivating example in a data frame. You can access this dataset by loading the dslabs library and loading the murders dataset using the data function:
+A large proportion of data analysis challenges start with data stored in a data frame. For example, we stored the data for our motivating example in a data frame. You can access this dataset by loading the dslabs library and loading the `murders` dataset using the `data` function:
 
 ```{r}
 library(dslabs)
@@ -340,9 +340,9 @@ class(murders)
 
 
 
-3.5.1 Examining an object
+## 3.5.1 Examining an object
 
-The function str is useful for finding out more about the structure of an object:
+The function `str` is useful for finding out more about the structure of an object:
 
 ```{r}
 str(murders)
@@ -354,7 +354,7 @@ str(murders)
 #>  $ total     : num  135 19 232 93 1257 ...
 ```
 
-This tells us much more about the object. We see that the table has 51 rows (50 states plus DC) and five variables. We can show the first six lines using the function head:
+This tells us much more about the object. We see that the table has 51 rows (50 states plus DC) and five variables. We can show the first six lines using the function `head`:
 
 ```{r}
 head(murders)
@@ -369,9 +369,9 @@ head(murders)
 
 
 
-3.5.2 The accessor: $
+## 3.5.2 The accessor: $
 
-For our analysis, we will need to access the different variables represented by columns included in this data frame. To do this, we use the accessor operator $ in the following way:
+For our analysis, we will need to access the different variables represented by columns included in this data frame. To do this, we use the accessor operator `$` in the following way:
 
 ```{r}
 murders$population
@@ -385,22 +385,22 @@ murders$population
 #> [50]  5686986   563626
 ```
 
-But how did we know to use population? Previously, by applying the function str to the object murders, we revealed the names for each of the five variables stored in this table. We can quickly access the variable names using:
+But how did we know to use population? Previously, by applying the function `str` to the object `murders`, we revealed the names for each of the five variables stored in this table. We can quickly access the variable names using:
 
 ```{r}
 names(murders)
 #> [1] "state"      "abb"        "region"     "population" "total"
 ```
 
-It is important to know that the order of the entries in murders$population preserves the order of the rows in our data table. This will later permit us to manipulate one variable based on the results of another.
+It is important to know that the order of the entries in `murders$population` preserves the order of the rows in our data table. This will later permit us to manipulate one variable based on the results of another.
 
-Tip: R comes with a very nice auto-complete functionality that saves us the trouble of typing out all the names. Try typing murders$p then hitting the tab key on your keyboard. This functionality and many other useful auto-complete features are available when working in RStudio.
+Tip: R comes with a very nice auto-complete functionality that saves us the trouble of typing out all the names. Try typing `murders$p` then hitting the tab key on your keyboard. This functionality and many other useful auto-complete features are available when working in RStudio.
 
 
 
-3.5.3 Vectors: numerics, characters, and logical
+## 3.5.3 Vectors: numerics, characters, and logical
 
-The object murders$population is not one number but several. We call these types of objects vectors. A single number is technically a vector of length 1, but in general we use the term vectors to refer to objects with several entries. The function length tells you how many entries are in the vector:
+The object `murders$population` is not one number but several. We call these types of objects vectors. A single number is technically a vector of length 1, but in general we use the term vectors to refer to objects with several entries. The function `length` tells you how many entries are in the vector:
 
 ```{r}
 pop <- murders$population
@@ -426,7 +426,7 @@ class(murders$state)
 
 As with numeric vectors, all entries in a character vector need to be a character.
 
-Another important type of vectors are logical vectors. These must be either TRUE or FALSE.
+Another important type of vectors are logical vectors. These must be either `TRUE` or `FALSE`.
 
 ```{r}
 z <- 3 == 2
@@ -436,7 +436,7 @@ class(z)
 #> [1] "logical"
 ```
 
-Here the == is a relational operator asking if 3 is equal to 2. In R, if you just use one =, you actually assign a variable, but if you use two == you test for equality.
+Here the `==` is a relational operator asking if 3 is equal to 2. In R, if you just use one `=`, you actually assign a variable, but if you use two `==` you test for equality.
 
 You can see the other relational operators by typing:
 
@@ -444,11 +444,11 @@ You can see the other relational operators by typing:
 ?Comparison
 ```
 
-Mathematically, the values in pop are integers and there is an integer class in R. However, by default, numbers are assigned class numeric even when they are round integers. For example, class(1) returns numeric. You can turn them into class integer with the as.integer() function or by adding an L like this: 1L. Note the class by typing: class(1L)
+Mathematically, the values in `pop` are integers and there is an integer class in R. However, by default, numbers are assigned class numeric even when they are round integers. For example, `class(1)` returns numeric. You can turn them into class integer with the `as.integer()` function or by adding an `L` like this: `1L`. Note the class by typing: `class(1L)`
 
 
 
-3.5.4 Factors
+## 3.5.4 Factors
 
 In the murders dataset, we might expect the region to also be a character vector. However, it is not:
 
@@ -457,7 +457,7 @@ class(murders$region)
 #> [1] "factor"
 ```
 
-It is a factor. Factors are useful for storing categorical data. We can see that there are only 4 regions by using the levels function:
+It is a factor. Factors are useful for storing categorical data. We can see that there are only 4 regions by using the `levels` function:
 
 ```{r}
 levels(murders$region)
@@ -468,9 +468,9 @@ In the background, R stores these levels as integers and keeps a map to keep tra
 
 Note that the levels have an order that is different from the order of appearance in the factor object. The default is for the levels to follow alphabetical order.
 
-The function reorder lets us change the order of the levels of a factor variable based on a summary computed on a numeric vector.
+The function `reorder` lets us change the order of the levels of a factor variable based on a summary computed on a numeric vector.
 
-Suppose we want the levels of the region by the total number of murders rather than alphabetical order. If there are values associated with each level, we can use the reorder and specify a data summary to determine the order. The following code takes the sum of the total murders in each region, and reorders the factor following these sums.
+Suppose we want the levels of the region by the total number of murders rather than alphabetical order. If there are values associated with each level, we can use the `reorder` and specify a data summary to determine the order. The following code takes the sum of the total murders in each region, and reorders the factor following these sums.
 
 ```{r}
 region <- murders$region
@@ -486,7 +486,7 @@ Warning: Factors can be a source of confusion since sometimes they behave like c
 
 
 
-3.5.5 Lists
+## 3.5.5 Lists
 
 Data frames are a special case of lists.
 
@@ -525,14 +525,14 @@ You might also encounter lists without variable names:
 #> [1] "A"
 ```
 
-As with data frames, you can extract the components of a list with the accessor $. In fact, data frames are a type of list.
+As with data frames, you can extract the components of a list with the accessor `$`. In fact, data frames are a type of list.
 
 ```{r}
 record$student_id
 #> NULL
 ```
 
-We can also use double square brackets ([[) like this:
+We can also use double square brackets (`[[`) like this:
 
 ```{r}
 record[["student_id"]]
@@ -543,13 +543,13 @@ You should get used to the fact that in R, there are often several ways to do th
 
 
 
-3.5.6 Matrices
+## 3.5.6 Matrices
 
 Matrices are another type of object that are common in R. Matrices are similar to data frames in that they are two-dimensional: they have rows and columns. However, like numeric, character and logical vectors, entries in matrices have to be all the same type. For this reason data frames are much more useful for storing data, since we can have characters, factors and numbers in them.
 
 Yet matrices have a major advantage over data frames: we can perform a matrix algebra operations, a powerful type of mathematical technique.
 
-We can define a matrix using the matrix function. We need to specify the number of rows and columns.
+We can define a `matrix` using the matrix function. We need to specify the number of rows and columns.
 
 ```{r}
 mat <- matrix(1:12, 4, 3)
@@ -561,7 +561,7 @@ mat
 #> [4,]    4    8   12
 ```
 
-You can access specific entries in a matrix using square brackets ([). If you want the second row, third column, you use:
+You can access specific entries in a matrix using square brackets (`[`). If you want the second row, third column, you use:
 
 ```{r}
 mat[2, 3]
@@ -606,7 +606,7 @@ mat[1:2, 2:3]
 #> [2,]    6   10
 ```
 
-We can convert matrices into data frames using the function as.data.frame:
+We can convert matrices into data frames using the function `as.data.frame`:
 
 ```{r}
 as.data.frame(mat)
@@ -617,7 +617,7 @@ as.data.frame(mat)
 #> 4  4  8 12
 ```
 
-You can also use single square brackets ([) to access rows and columns of a data frame:
+You can also use single square brackets (`[`) to access rows and columns of a data frame:
 
 ```{r}
 data("murders")
@@ -631,7 +631,7 @@ murders[2:3, ]
 
 
 
-3.6 Exercises
+# 3.6 Exercises
 
 1. Load the US murders dataset.
 
@@ -640,7 +640,7 @@ library(dslabs)
 data(murders)
 ```
 
-Use the function str to examine the structure of the murders object. We can see that this object is a data frame with 51 rows and five columns. Which of the following best describes the variables represented in this data frame?
+Use the function `str` to examine the structure of the `murders` object. We can see that this object is a data frame with 51 rows and five columns. Which of the following best describes the variables represented in this data frame?
 
 A. The 51 states.
 
@@ -648,20 +648,20 @@ B. The murder rates for all 50 states and DC.
 
 **C**. The state name, the abbreviation of the state name, the state’s region, and the state’s population and total number of murders for 2010.
 
-D. str shows no relevant information.
+D. `str` shows no relevant information.
 
 2. What are the column names used by the data frame for these five variables?
 
-###state, abb, region, population, total
+### state, abb, region, population, total
 
-3. Use the accessor $ to extract the state abbreviations and assign them to the object a. What is the class of this object?
+3. Use the accessor `$` to extract the state abbreviations and assign them to the object `a`. What is the class of this object?
 
 ```{r}
 a <- murders$abb
 class(a)
 ```
 
-4. Now use the square brackets to extract the state abbreviations and assign them to the object b. Use the identical function to determine if a and b are the same.
+4. Now use the square brackets to extract the state abbreviations and assign them to the object `b`. Use the `identical` function to determine if `a` and `b` are the same.
 
 ```{r}
 b <- murders[["abb"]]
@@ -670,20 +670,20 @@ identical(a, b)
 ```
 
 
-5. We saw that the region column stores a factor. You can corroborate this by typing:
+5. We saw that the `region` column stores a factor. You can corroborate this by typing:
 
 ```{r}
 class(murders$region)
 ```
 
-With one line of code, use the function levels and length to determine the number of regions defined by this dataset.
+With one line of code, use the function `levels` and `length` to determine the number of regions defined by this dataset.
 
 ```{r}
 length(levels(murders$region))
 ```
 
 
-6. The function table takes a vector and returns the frequency of each element. You can quickly see how many states are in each region by applying this function. Use this function in one line of code to create a table of states per region.
+6. The function `table` takes a vector and returns the frequency of each element. You can quickly see how many states are in each region by applying this function. Use this function in one line of code to create a table of states per region.
 
 ```{r}
 table(murders$region)
