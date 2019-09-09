@@ -333,9 +333,25 @@ C. `any(!x)`
 
 Write a line of code that assigns to the object `new_names` the state abbreviation when the state name is longer than 8 characters.
 
+
 ```{r}
 new_names <- ifelse(nchar(murders$state)>8 , murders$abb , murders$state)
 new_names
+```
+
+
+```{r}
+new_names <- ifelse(nchar(murders$state)>8 , murders$abb , murders$state)
+indexc <- which(new_names %in% murders$abb)
+new_names2 <- new_names[indexc]
+new_names2
+```
+
+
+one.. line....
+```{r}
+new_names2 <- ifelse(nchar(murders$state)>8 , murders$abb , murders$state)[indexc <- which(ifelse(nchar(murders$state)>8 , murders$abb , murders$state) %in% murders$abb)]
+new_names2
 ```
 
 
@@ -349,12 +365,14 @@ sum_n(3.2)
 sum_n(5000)
 ```
 
+**12502500**
+
 
 5. Create a function `altman_plot` that takes two arguments, `x` and `y`, and plots the difference against the sum.
 
 ```{r}
 altman_plot <- function(x, y){
-  plot(abs(x-y), x+y)
+  plot(x+y, abs(x-y))
 }
 altman_plot(35, 22)
 ```
@@ -396,7 +414,7 @@ for(m in 1:25){
 }
 s_n
 ```
-???
+
 
 
 9. Repeat exercise 8, but this time use `sapply`.
@@ -405,7 +423,7 @@ s_n
 m <- 1:25
 sapply(m, compute_s_n)
 ```
-??
+
 
 
 10. Repeat exercise 8, but this time use `map_dbl`.
