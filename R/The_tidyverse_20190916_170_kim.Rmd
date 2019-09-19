@@ -1252,16 +1252,20 @@ map_df(n, compute_s_n)
 
 
 ```{r}
+do_it <- function(n){
+  return(sum(1:n))
+}
+
 compute_s_n_ver2 <- function(m){
-  n <- 1:m
-  gogo <- sapply(n, sum)
-  s_n <- gogo[m]
-  s_n_2 <- sum(gogo)
+  s_n <- sum(1:m)
+  k <- 1:m
+  s_n_2 <- sum(sapply(k, do_it))
   data_frame(n = m, s_n = s_n, s_n_2 = s_n_2)
 }
 
 k <- 1:100
 map_df(k, compute_s_n_ver2)
+
 ```
 
 
