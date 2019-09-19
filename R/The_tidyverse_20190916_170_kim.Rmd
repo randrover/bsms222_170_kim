@@ -129,7 +129,7 @@ D. `BOD` is tidy: all small datasets are tidy by definition.
 4. Which of the following built-in datasets is tidy (you can pick more than one):
 
 ```{r}
-UCBAdmissions
+EuStockMarkets
 ```
 
 
@@ -944,7 +944,7 @@ grades <- data.frame(names = c("John", "Juan", "Jean", "Yao"),
 class(grades$names)
 #> [1] "factor
 ```
-???
+
 
 To avoid this, we use the rather cumbersome argument `stringsAsFactors`:
 
@@ -1249,6 +1249,22 @@ compute_s_n <- function(m){
 n <- 1:100
 map_df(n, compute_s_n)
 ```
+
+
+```{r}
+compute_s_n_ver2 <- function(m){
+  n <- 1:m
+  gogo <- sapply(n, sum)
+  s_n <- gogo[m]
+  s_n_2 <- sum(gogo)
+  data_frame(n = m, s_n = s_n, s_n_2 = s_n_2)
+}
+
+k <- 1:100
+map_df(k, compute_s_n_ver2)
+```
+
+
 
 
 
