@@ -413,9 +413,10 @@ b
 ```
 
 ```{r}
+# 이렇게 하면 사람이 보기 좋은 결과가 나옴. 그러나 tidy하진 않은 듯? 이럴 땐 새로운 level 넣을 때 column을 넣어야 함. 와이드 포맷이 이런 거였던 듯?
 x <- hgnc_level %>% filter(hgnc_id == 0) %>% table()
 y <- hgnc_level %>% filter(hgnc_id == 1) %>% table()
 rbind(x, y)
-# 이렇게 하면 사람이 보기 좋은 결과가 나옴. 그러나 tidy하진 않은 듯? 이럴 땐 새로운 level 넣을 때 column을 넣어야 함. 와이드 포맷이 이런 거였던 듯?
+
 ```
 
