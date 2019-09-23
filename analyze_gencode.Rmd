@@ -339,8 +339,9 @@ new <- read.delim("dotheq_new_data.txt", sep='', header = T)
 
 Quiz 2.gene biotype에 따라 hgnc 정보 존재 여부를 계수합니다.
 
-```{r}
 # hgnc_id가 없을 때 0 계수, 있을 때 1 계수
+```{r}
+
 genetype_hgnc <- new %>% select(gene_type, hgnc_id)
 genetype_hgnc$hgnc_id <- ifelse(grepl("HGNC", genetype_hgnc$hgnc_id) == TRUE, 1, 0)
 genetype_hgnc %>% group_by(gene_type) %>% table()
@@ -353,9 +354,8 @@ genetype_hgnc %>% group_by(gene_type) %>% table()
 write.table(genetype_hgnc, "dotheq_genetype_hgnc.txt", row.names = FALSE, quote = FALSE, na = "0")
 ```
 
-
-```{r}
 # HGNC 포함하는 것 계수~ gene_type에 따라
+```{r}
 new %>% group_by(gene_type) %>% summarize( sum = sum(grepl("HGNC", hgnc_id)))
 
 ```
@@ -401,14 +401,16 @@ hgnc_level$hgnc_id <- ifelse(grepl("HGNC", hgnc_level$hgnc_id) == TRUE, 1, 0)
 
 
 
+# 이렇게 하면 두 번째 것이 우선되어 group이 나뉜다. 0과 1의 구분이 사라짐.. 0과 1의 합으로 나옴.
 ```{r}
 b <- hgnc_level %>% group_by(hgnc_id) %>% group_by(level) %>% count()
-# 이렇게 하면 두 번째 것이 우선되어 group이 나뉜다. 0과 1의 구분이 사라짐.. 0과 1의 합으로 나옴.
+
 b
 ```
 
-```{r}
+
 # 이렇게 하면 사람이 보기 좋은 결과가 나옴. 그러나 tidy하진 않은 듯? 이럴 땐 새로운 level 넣을 때 column을 넣어야 함. 와이드 포맷이 이런 거였던 듯?
+```{r}
 x <- hgnc_level %>% filter(hgnc_id == 0) %>% table()
 y <- hgnc_level %>% filter(hgnc_id == 1) %>% table()
 rbind(x, y)
@@ -417,9 +419,9 @@ rbind(x, y)
 
 
 
-
-```{r}
 # level에 따라 계수한 hgnc여부를 각각 계수한 후 두 table을 합치기. 요런 것이 롱 포맷
+```{r}
+
 a <- hgnc_level %>% group_by(hgnc_id, level) %>% count()
 a
 ```
