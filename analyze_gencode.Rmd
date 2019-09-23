@@ -399,11 +399,6 @@ hgnc_level <- read.delim("dotheq_hgnc_level.txt", sep='', header = T)
 hgnc_level$hgnc_id <- ifelse(grepl("HGNC", hgnc_level$hgnc_id) == TRUE, 1, 0)
 ```
 
-```{r}
-# level에 따라 계수한 hgnc여부를 각각 계수한 후 두 table을 합치기. 요런 것이 롱 포맷
-a <- hgnc_level %>% group_by(hgnc_id, level) %>% count()
-a
-```
 
 
 ```{r}
@@ -418,5 +413,14 @@ x <- hgnc_level %>% filter(hgnc_id == 0) %>% table()
 y <- hgnc_level %>% filter(hgnc_id == 1) %>% table()
 rbind(x, y)
 
+```
+
+
+
+
+```{r}
+# level에 따라 계수한 hgnc여부를 각각 계수한 후 두 table을 합치기. 요런 것이 롱 포맷
+a <- hgnc_level %>% group_by(hgnc_id, level) %>% count()
+a
 ```
 
