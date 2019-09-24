@@ -509,8 +509,8 @@ What is class of the object `p`?
 class(p)
 ```
 
-**ggplot**
-?
+## **list**
+
 
 
 
@@ -555,7 +555,7 @@ class(p)
 ```
 
 same...
-**ggplot**
+## **list**
 
 
 
@@ -627,6 +627,7 @@ B. We need to let `geom_label` know what character to use in the plot.
 C. The `geom_label` geometry does not require x-axis and y-axis values.
 
 D. `geom_label` is not a ggplot2 command.
+
 
 aes 안에 써야 함.. label을..
 
