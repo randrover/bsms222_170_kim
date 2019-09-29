@@ -5,7 +5,7 @@ output: html_notebook
 
 
 
-# Chapter 10 Visualizing data distributions
+# Chapter 9 Visualizing data distributions
 
 Our first data visualization building block is learning to summarize lists of factors or numeric vectors. More often than not, the best way to share or explore this summary is through data visualization. The most basic statistical summary of a list of objects or numbers is its distribution. Once a vector has been summarized as a distribution, there are several data visualization techniques to effectively relay this information.
 
