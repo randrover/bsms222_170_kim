@@ -384,6 +384,11 @@ We can already see that there is indeed a “west versus the rest” dichotomy: 
 p + scale_y_continuous(trans = "log2")
 ```
 
+
+
+### 10.7.1 Boxplots
+
+
 The exploratory data analysis above has revealed two characteristics about average income distribution in 1970. Using a histogram, we found a bimodal distribution with the modes relating to poor and rich countries. Then, by examining the data after stratifying by region, we noticed that rich countries were mostly in Europe and North America, along with Australia and New Zealand. This fact and the variability observed in the rest of the countries motivates us to define the following give groups:
 
 ```{r}
@@ -426,7 +431,7 @@ p + geom_point(alpha = 0.5)
 
 
 
-### 10.7.1 Boxplots
+### 10.7.2 Ridge plots
 
 Showing each individual point does not always reveal important characteristics of the distribution. Although not the case here, when the number of data points is so large that there is over-plotting, showing the data can be counterproductive. Boxplots help with this by providing a five-number summary, but this has limitations too. For example, boxplots will not permit us to discover bimodal distributions. To see this, note that the two plots below are summarizing the same dataset:
 
@@ -461,8 +466,7 @@ p + geom_density_ridges(jittered_points = TRUE,
 
 
 
-
-### 10.7.2 Ridge plots
+### 10.7.3 Example: 1970 versus 2010 income distributions
 
 Data exploration clearly shows that in 1970 there was a “west versus the rest” dichotomy. But does this dichotomy persist? Let’s use `facet_grid` see how the distributions have changed. To start, we will focus on two groups: the west and the rest. We make four histograms.
 
@@ -573,7 +577,7 @@ This makes it appear as if there are the same number of countries in each group.
 
 
 
-### 10.7.3 Example: 1970 versus 2010 income distributions
+### 10.7.4 Accessing computed variables
 
 To have the areas of these densities be proportional to the size of the groups, we can simply multiply the y-axis values by the size of the group. From the `geom_density` help file, we see that the functions compute a variable called `count` that does exactly this. We want this variable to be on the y-axis rather than the density.
 
@@ -634,7 +638,7 @@ Notice that we order the levels of the group so that the West’s density are pl
 
 
 
-### 10.7.4 Accessing computed variables
+### 10.7.5 Weighted densities
 
 As a final point, we note that these distributions weigh every country the same. So if most of the population is improving, but living in a very large country, such as China, we might not appreciate this. We can actually weight the smooth densities using the `weight` mapping argument. The plot then looks like this:
 
@@ -644,7 +648,7 @@ This particular figure shows very clearly how the income distribution gap is clo
 
 
 
-### 10.7.5 Weighted densities
+## 10.8 The ecological fallacy and importance of showing the data
 
 Throughout this section, we have been comparing regions of the world. We have seen that, on average, some regions do better than others. In this section, we focus on describing the importance of variability within the groups when examining the relationship between a country’s infant mortality rates and average income.
 
@@ -685,19 +689,19 @@ In this plot we introduce the use of the `limit` argument, which lets us change 
 
 
 
-## 10.8 The ecological fallacy and importance of showing the data
+### 10.8.1 Logistic transformation
 
-The logistic or logit transformation for a proportion or rate [Math Processing Error] is defined as:
+The logistic or logit transformation for a proportion or rate $p$ is defined as:
 
-_[Math Processing Error]_
+$f(p) = log(p/(1-p))$
 
-When _[Math Processing Error]_ is a proportion or probability, the quantity that is being logged, _[Math Processing Error]_, is called the odds. In this case _[Math Processing Error]_ is the proportion of infants that survived. The odds tell us how many more infants are expected to survive than to die. The log transformation makes this symmetric. If the rates are the same, then the log odds is 0. Fold increases or decreases turn into positive and negative increments respectively.
+When $p$ is a proportion or probability, the quantity that is being logged, $p/(1-p)$ , is called the _odds_. In this case $p$ is the proportion of infants that survived. The odds tell us how many more infants are expected to survive than to die. The log transformation makes this symmetric. If the rates are the same, then the log odds is 0. Fold increases or decreases turn into positive and negative increments respectively.
 
 This scale is useful when we want to highlight differences near 0 or 1. For survival rates this is important because a survival rate of 90% is unacceptable, while a survival of 99% is relatively good. We would much prefer a survival rate closer to 99.9%. We want our scale to highlight these difference and the logit does this. Note that 99.9/0.1 is about 10 times bigger than 99/1 which is about 10 times larger than 90/10. By using the log, these fold changes turn into constant increases.
 
 
 
-### 10.8.1 Logistic transformation
+### 10.8.2 Show the data
 
 Now, back to our plot. Based on the plot above, do we conclude that a country with a low income is destined to have low survival rate? Do we conclude that all survival rates in Sub-Saharan Africa are all lower than in Southern Asia, which in turn are lower than in the Pacific Islands, and so on?
 
@@ -710,10 +714,3 @@ Specifically, we see that there is a large amount of variability. We see that co
 
 
 done......
-
-
-
-### 10.8.2 Show the data
-
-
-
