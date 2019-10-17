@@ -27,7 +27,10 @@ pLI score과 developmental disorder 발생 빈도 사이에 관계가 있음을 
 
 한 번 알아보도록 하겠습니다.
 
+# 설명
 ```{r}
+#설명
+
 #DDG2P 데이터를 `DDG`에 저장합니다.
 DDG<- read.delim("DDG2P_24_9_2019.with_pLI.txt", sep='\t', header = T,)
 
