@@ -28,6 +28,9 @@ pLI score과 developmental disorder 발생 빈도 사이에 관계가 있음을 
 
 한 번 알아보도록 하겠습니다.
 
+***
+
+
 # 설명
 ```{r}
 #설명
@@ -89,13 +92,15 @@ ggsave("DDD2P.DiseaseFreqWithpLI.20191017.jpg", great, height = 10, width = 8)
 
 ```
 
+***
+
 
 ## 분석
 
 developmental disorder 발생 빈도가 높은 gene은 대체로 pLI score가 1에 가깝게 나타났습니다.
 disorder 발생 빈도가 높은 것과 LOF mutation에 취약한 것 사이에 어느 정도 관계가 있음을 분석해 볼 수 있었습니다.
 
-
+***
 
 ## 한계
 
@@ -103,14 +108,14 @@ disorder 발생 빈도가 높은 것과 LOF mutation에 취약한 것 사이에 
 
 발생 빈도가 낮을 경우 pLI score와 연관이 낮거나, 혹은 발생 빈도가 높은 gene과 pLI score 사이의 비례적 연관성이 우연히 나타났을 수도 있습니다.
 
-
+***
 
 ## 더 나아가
 
 발생 빈도가 높은 경우에만 효과가 있는지에 대해 더 분석해 볼 필요가 있습니다. 또한 pLI score와 disorder의 종류, 그리고 발생 빈도가 관련이 있는지 확인해 볼 필요가 있습니다.
 
 
-
+***
 
 
 ### Term 정리
