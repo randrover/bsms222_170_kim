@@ -94,3 +94,4 @@ Haploinsufficient, where observed < 10% of expected (heterozygous LoFs are not t
 allele. 대립유전자. 한 쌍의 염색체가 있을 때 각 염색체에 있는 대립형질의 유전자..
 heterozygous. 다른 대립유전자. 이형접합체. Rr. rR.
 homozygous. 같은 대립유전자.. 동형접합체. RR. rr.
+..
