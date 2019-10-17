@@ -31,19 +31,22 @@ pLI score과 developmental disorder 발생 빈도 사이에 관계가 있음을 
 ***
 
 
-# 설명
+## 설명
 ```{r}
-#설명
+
 
 #DDG2P 데이터를 `DDG`에 저장합니다.
 DDG<- read.delim("DDG2P_24_9_2019.with_pLI.txt", sep='\t', header = T,)
 
+```
 
-
+``` {r}
 #DDG에서 developmental disorder 발생 빈도가 5를 초과하는 gene을 선별합니다.
 gg <- DDG %>% select(gene.symbol) %>% group_by(gene.symbol) %>% dplyr::count() %>% filter(n>5) %>% select(gene.symbol) %>% .$gene.symbol
 
+```
 
+```{r}
 
 #gene별로 developmental disorder 발생 빈도와 pLI를 비교합니다.
 #대체로 developmental disorder 발생 빈도가 높은 gene은 pLI 또한 1에 가깝다는 것을 알 수 있습니다.
@@ -58,7 +61,9 @@ p1 <- DDG[DDG$gene.symbol %in% gg, ] %>% select(gene.symbol, disease.name, pLI) 
   ggtitle("Relationship between DD Frequency and pLI")
 
 
+```
 
+```{r}
 
 #가장 많은 gene과 연관된 developmental disorder 종류
 disease_freq <- DDG %>% select(disease.name) %>% group_by(disease.name) %>% dplyr::count()
@@ -78,7 +83,9 @@ p2_1 <- top_six_freq %>%
   theme(plot.title = element_text(size = 10))
 
 
+```
 
+```{r}
 
 
 #플롯 합치기
