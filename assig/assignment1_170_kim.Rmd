@@ -17,8 +17,9 @@ library(cowplot)
 
 ## 주제 **각 gene에 대한 developmental disorder 발생 빈도와 종류 및 pLI 분포**
 
-pLI의 정의는 The probability of being loss-of-function intolerant (intolerant of both heterozygous and homozygous loss-of-function variants) 입니다.
-LOF(loss-of-function)을 견디지 못하는, 즉 해당 gene에 LOF가 발생했을 때 정상적으로 작동하지 않을 확률을 말합니다.
+`pLI`의 정의는 The probability of being loss-of-function intolerant (intolerant of both heterozygous and homozygous loss-of-function variants) 입니다.
+
+LOF(loss-of-function)을 견디지 못하는, 즉 해당 gene에 *LOF가 발생했을 때* *정상적으로 작동하지 않을 확률*을 말합니다.
 
 gene 하나 하나 보기에는 gene 수가 너무 많은 관계로, developmental disorder 발생 빈도가 높은 gene을 선별적으로 추출했습니다.
 
@@ -34,8 +35,12 @@ pLI score과 developmental disorder 발생 빈도 사이에 관계가 있음을 
 #DDG2P 데이터를 `DDG`에 저장합니다.
 DDG<- read.delim("DDG2P_24_9_2019.with_pLI.txt", sep='\t', header = T,)
 
+
+
 #DDG에서 developmental disorder 발생 빈도가 5를 초과하는 gene을 선별합니다.
 gg <- DDG %>% select(gene.symbol) %>% group_by(gene.symbol) %>% dplyr::count() %>% filter(n>5) %>% select(gene.symbol) %>% .$gene.symbol
+
+
 
 #gene별로 developmental disorder 발생 빈도와 pLI를 비교합니다.
 #대체로 developmental disorder 발생 빈도가 높은 gene은 pLI 또한 1에 가깝다는 것을 알 수 있습니다.
@@ -48,6 +53,8 @@ p1 <- DDG[DDG$gene.symbol %in% gg, ] %>% select(gene.symbol, disease.name, pLI) 
   ylab("pLI (Probability of being loss-of-function intolerant)") +
   xlim(0, 11) +
   ggtitle("Relationship between DD Frequency and pLI")
+
+
 
 
 #가장 많은 gene과 연관된 developmental disorder 종류
@@ -69,8 +76,12 @@ p2_1 <- top_six_freq %>%
 
 
 
+
+
 #플롯 합치기
 great <- plot_grid(p1, p2_1, labels = c('A', 'B'), label_size = 10, ncol = 1)
+
+
 
 
 #높이를 길게 저장했습니다.
@@ -79,22 +90,40 @@ ggsave("DDD2P.DiseaseFreqWithpLI.20191017.jpg", great, height = 10, width = 8)
 ```
 
 
-많은 gene과 연관된 disorder의 종류를 확인할 수 있었습니다.
+## 분석
 
-developmental disorder 발생 빈도가 높은 gene은 대체로 pLI score 또한 1에 가깝습니다.
-
-
-
+developmental disorder 발생 빈도가 높은 gene은 대체로 pLI score가 1에 가깝게 나타났습니다.
+disorder 발생 빈도가 높은 것과 LOF mutation에 취약한 것 사이에 어느 정도 관계가 있음을 분석해 볼 수 있었습니다.
 
 
-### Term 정리.
+
+## 한계
+
+모든 gene을 사용하지 않았고, 모든 gene을 사용하여 분석을 했을 때 disorder 발생 빈도가 높은 gene만 선별하여 사용했을 때보다 발생 빈도와 pLI score간의 상관성이 보다 낮게 나타났습니다.
+
+발생 빈도가 낮을 경우 pLI score와 연관이 낮거나, 혹은 발생 빈도가 높은 gene과 pLI score 사이의 비례적 연관성이 우연히 나타났을 수도 있습니다.
+
+
+
+## 더 나아가
+
+발생 빈도가 높은 경우에만 효과가 있는지에 대해 더 분석해 볼 필요가 있습니다. 또한 pLI score와 disorder의 종류, 그리고 발생 빈도가 관련이 있는지 확인해 볼 필요가 있습니다.
+
+
+
+
+
+### Term 정리
 
 
 `Null` : where observed ≈ expected (LoF variation is tolerated) LoF 잘 견딘다.
-`Recessive` : where observed ≤ 50% of expected (heterozygous LoFs are tolerated) 대립유전자 한 쪽만 잘못된 거 잘 견딤. 즉 LoF 변이 발생이 열성.
-Haploinsufficient, where observed < 10% of expected (heterozygous LoFs are not tolerated) 대립유전자 한 쪽만 잘못되어도 못 견딤. 즉 LoF 변이 발생이 우성.
 
-allele. 대립유전자. 한 쌍의 염색체가 있을 때 각 염색체에 있는 대립형질의 유전자..
-heterozygous. 다른 대립유전자. 이형접합체. Rr. rR.
-homozygous. 같은 대립유전자.. 동형접합체. RR. rr.
-..
+`Recessive` : where observed ≤ 50% of expected (heterozygous LoFs are tolerated) 대립유전자 한 쪽만 잘못된 거 잘 견딤. 즉 LoF 변이 발생이 열성.
+
+`Haploinsufficient` : where observed < 10% of expected (heterozygous LoFs are not tolerated) 대립유전자 한 쪽만 잘못되어도 못 견딤. 즉 LoF 변이 발생이 우성.
+
+`allele` : 대립유전자. 한 쌍의 염색체가 있을 때 각 염색체에 있는 대립형질의 유전자..
+
+`heterozygous` : 다른 대립유전자. 이형접합체. Rr. rR.
+
+`homozygous` : 같은 대립유전자.. 동형접합체. RR. rr.
