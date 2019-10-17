@@ -15,7 +15,7 @@ library(cowplot)
 ```
 
 
-## 주제 **각 gene에 대한 developmental disorder 발생 빈도와 종류 및 pLI 분포**
+## 주제 각 gene에 대한 developmental disorder 발생 빈도와 종류 및 pLI 분포
 
 `pLI`의 정의는 The probability of being loss-of-function intolerant (intolerant of both heterozygous and homozygous loss-of-function variants) 입니다.
 
