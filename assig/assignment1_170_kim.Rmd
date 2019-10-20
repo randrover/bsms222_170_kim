@@ -1,6 +1,8 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 #DDG2P 데이터
 
@@ -54,6 +56,7 @@ p1 <- DDG[DDG$gene.symbol %in% gg, ] %>% select(gene.symbol, disease.name, pLI) 
   ggplot(aes(n, pLI)) +
   geom_text_repel(aes(label = gene.symbol), show.legend = FALSE) +
   geom_point(aes(color = gene.symbol), show.legend = FALSE) +
+  coord_fixed(ratio = 10) +
   coord_flip() +
   xlab("Developmental Disorder Frequency") +
   ylab("pLI (Probability of being loss-of-function intolerant)") +
@@ -74,6 +77,7 @@ p2_1 <- top_six_freq %>%
   geom_col(fill = "#CC3399") +
   ylab("Occurrence Frequency in genes") +
   xlab("Developmental Disorder") +
+  coord_fixed(ratio = 1/10) +
   coord_flip() +
   scale_x_discrete(labels = c("AUTISM", "LEIGH SYNDROME", "ZELLWEGER SYNDROME", "EPILEPTIC
   ENCEPHALOPATHY", "INTELLECTUAL
@@ -85,7 +89,7 @@ p2_1 <- top_six_freq %>%
 
 ```
 
-```{r}
+```{r, fig.width = 8, fig.height = 10}
 
 
 #플롯 합치기
@@ -99,8 +103,10 @@ ggsave("DDD2P.DiseaseFreqWithpLI.20191017.jpg", great, height = 10, width = 8)
 
 
 
+
 great
 ```
+
 
 ***
 
