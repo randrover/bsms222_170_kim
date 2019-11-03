@@ -690,7 +690,7 @@ mean(!balls %in% "cyan" )
 mean(balls %in% "cyan" ) * sum(!balls %in% "cyan")/(length(balls)-1)
 ```
 
-0.1714286
+**0.1714286**
 
 
 ```{r}
@@ -782,7 +782,7 @@ The Celtics must win one of these 4 games.
 (2)두 번 졌을 경우, 처음 진 이후 뒤에 이어진 5번의 게임에서 4번 이기고 한 번 진다. 다섯 번째 게임은 무조건 이겨야 하므로, 앞의 네 번 중 한 번만 지면 된다.
 (3)세 번 졌을 경우, 마지막 게임은 꼭 이겨야 하므로 2번째 게임부터 6번째 게임까지 5번의 게임 중 3번 이기면 된다.
 
-아니 그냥 (1/2)^(게임횟수)*(경우 가짓수)하면 되는 거 아냐?
+(아니 그냥 (1/2)^(게임횟수)*(경우 가짓수)하면 되는 것일까?)
 ```{r}
 #(1)한 번 진 경우 (1가지)
 combinations(4, 4, v = c("a", "b", "c", "d"))
@@ -821,7 +821,7 @@ combinations(5, 2, v = c("a", "b", "c", "d", "e"))
 15/35
 ```
 
-다르네?
+(??)
 
 
 11. Confirm the results of the previous question with a Monte Carlo simulation.
@@ -836,9 +836,10 @@ cav_wins <- function(){
 results <- replicate(B, cav_wins())
 mean(results)
 ```
-으으음... 이렇게 해도 되나..?
+
 **0.3497**
 
+(이렇게 해도 되는 것일까..?)
 
 
 12. Two teams, A and B, are playing a seven game series. Team A is better than team B and has a $p>0.5$ chance of winning each game. Given a value $p$, the probability of winning the series for the underdog team B can be computed with the following function based on a Monte Carlo simulation:
