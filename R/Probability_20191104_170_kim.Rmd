@@ -809,19 +809,18 @@ warrior가 이긴 경우
 
 ```{r}
 combinations(3, 3, v = c("a", "b", "c"))
+d <- (0.5)^3
 combinations(3, 2, v = c("a", "b", "c"))
+e <- (0.5)^4*3
 combinations(4, 2, v = c("a", "b", "c", "d"))
+f <- (0.5)^5*6
 combinations(5, 2, v = c("a", "b", "c", "d", "e"))
+g <- (0.5)^6*10
+d + e + f + g
 ```
-
-그럼 모두 합하면 cav가 이긴 경우 가짓수 15, warrior가 이긴 경우 가짓수 20.
-합하면 35.
-15/35는?
-```{r}
-15/35
-```
-
-(??)
+각 가짓수마다 일어날 확률 다름.
+한 게임을 이길 확률은 두 팀 모두 같지만,
+n번 진 경우를 따질 때의 가짓수는 n이 어떤 숫자냐에 따라 확률이 다르다.
 
 
 11. Confirm the results of the previous question with a Monte Carlo simulation.
@@ -887,25 +886,225 @@ qplot(N, lets_plot_2)
 
 ## 13.10 Continuous probability
 
+In Section 8.4, we explained why when summarizing a list of numeric values, such as heights, it is not useful to construct a distribution that defines a proportion to each possible outcome. For example, if we measure every single person in a very large population of size $n$ with extremely high precision, since no two people are exactly the same height, we need to assign the proportion $1/n$ to each observed value and attain no useful summary at all.
+
+Similarly, when defining probability distributions, it is not useful to assign a very small probability to every single height.
+
+Just as when using distributions to summarize numeric data, it is much more practical to define a function that operates on intervals rather than single values. The standard way of doing this is using the _cumulative distribution function_ (CDF).
+
+We described empirical cumulative distribution function (eCDF) in Section 8.4 as a basic summary of a list of numeric values. As an example, we earlier defined the height distribution for adult male students. Here, we define the vector $x$ to contain these heights:
+
+```{r}
+library(tidyverse)
+library(dslabs)
+data(heights)
+x <- heights %>% filter(sex=="Male") %>% pull(height)
+```
+
+We defined the empirical distribution function as:
+
+```{r}
+F <- function(a) mean(x<=a)
+```
+
+which, for any value `a`, gives the proportion of values in the list `x` that are smaller or equal than `a`.
+x에 a보다 작거나 같은 게 얼마나 있는지 proportion 보여줌.
+
+Keep in mind that we have not yet introduced probability in the context of CDFs. Let’s do this by asking the following: if I pick one of the male students at random, what is the chance that he is taller than 70.5 inches? Because every student has the same chance of being picked, the answer to this is equivalent to the proportion of students that are taller than 70.5 inches. Using the CDF we obtain an answer by typing:
+학생마다 선택될 가능성 같으므로. 학생 proportion과 확률 같음.
+
+```{r}
+1 - F(70)
+#> [1] 0.377
+```
+정규분포 같이 그려진 그 종 모양 그래프 말하는 건가? Pr(x<=a) 뭐 이런? a부터 그 이전까지 density같은..
+
+Once a CDF is defined, we can use this to compute the probability of any subset. For instance, the probability of a student being between height a and height b is:
+
+```{r}
+F(b)-F(a)
+```
+
+Because we can compute the probability for any possible event this way, the cumulative probability function defines the probability distribution for picking a height at random from our vector of heights `x`.
+
 
 
 ## 13.11 Theoretical continuous distributions
+
+In Section 8.8 we introduced the normal distribution as a useful approximation to many naturally occurring distributions, including that of height. The cumulative distribution for the normal distribution is defined by a mathematical formula which in R can be obtained with the function `pnorm`. We say that a random quantity is normally distributed with average `m` and standard deviation `s` if its probability distribution is defined by:
+
+```{r}
+F(a) = pnorm(a, m, s)
+```
+
+This is useful because if we are willing to use the normal approximation for, say, height, we don’t need the entire dataset to answer questions such as: what is the probability that a randomly selected student is taller then 70 inches? We just need the average height and standard deviation:
+
+```{r}
+m <- mean(x)
+s <- sd(x)
+1 - pnorm(70.5, m, s)
+#> [1] 0.371
+```
 
 
 
 ### 13.11.1 Theoretical distributions as approximations
 
+The normal distribution is derived mathematically: we do not need data to define it. For practicing data scientists, almost everything we do involves data. Data is always, technically speaking, discrete. For example, we could consider our height data categorical with each specific height a unique category. The probability distribution is defined by the proportion of students reporting each height. Here is a plot of that probability distribution:
+개별 키를 모두 카테고리화해서 플롯하면.. 매우 discrete.
+
+(그래프)
+
+While most students rounded up their heights to the nearest inch, others reported values with more precision. One student reported his height to be 69.6850393700787, which is 177 centimeters. The probability assigned to this height is 0.001 or 1 in 812. The probability for 70 inches is much higher at 0.106, but does it really make sense to think of the probability of being exactly 70 inches as being different than 69.6850393700787?
+69.6850393700787와 70을 다르게 표기하는 것이 정말 유효할까?
+
+Clearly it is much more useful for data analytic purposes to treat this outcome as a continuous numeric variable, keeping in mind that very few people, or perhaps none, are exactly 70 inches, and that the reason we get more values at 70 is because people round to the nearest inch.
+키가 정확히 70인치인 사람은 별로 없으므로 연속적 데이터로 사용하는 것이 좋다.
+
+With continuous distributions, the probability of a singular value is not even defined. For example, it does not make sense to ask what is the probability that a normally distributed value is 70. Instead, we define probabilities for intervals. We thus could ask what is the probability that someone is between 69.5 and 70.5.
+범위로 확률을 묻는다. 개별 키의 확률 묻지 않고.
+
+In cases like height, in which the data is rounded, the normal approximation is particularly useful if we deal with intervals that include exactly one round number. For example, the normal distribution is useful for approximating the proportion of students reporting values in intervals like the following three:
+
+```{r}
+mean(x <= 68.5) - mean(x <= 67.5)
+#> [1] 0.115
+mean(x <= 69.5) - mean(x <= 68.5)
+#> [1] 0.119
+mean(x <= 70.5) - mean(x <= 69.5)
+#> [1] 0.122
+```
+이런 학생들이 몇% 있는가.
+
+Note how close we get with the normal approximation:
+
+```{r}
+pnorm(68.5, m, s) - pnorm(67.5, m, s) 
+#> [1] 0.103
+pnorm(69.5, m, s) - pnorm(68.5, m, s) 
+#> [1] 0.11
+pnorm(70.5, m, s) - pnorm(69.5, m, s) 
+#> [1] 0.108
+```
+정규분포(?) 써도 위와 매우 비슷.
+
+However, the approximation is not as useful for other intervals. For instance, notice how the approximation breaks down when we try to estimate:
+그런데 어떤 interval 확률 다룰 때는 오류가 크다.
+
+```{r}
+mean(x <= 70.9) - mean(x<=70.1)
+#> [1] 0.0222
+```
+
+with
+
+```{r}
+pnorm(70.9, m, s) - pnorm(70.1, m, s)
+#> [1] 0.0836
+```
+
+In general, we call this situation _discretization_. Although the true height distribution is continuous, the reported heights tend to be more common at discrete values, in this case, due to rounding. As long as we are aware of how to deal with this reality, the normal approximation can still be a very useful tool.
+수가 이산적으로 변할 때 얘기하는 듯?
+현실이랑 잘 비교해야 함. 현실에서는 연속적으로 데이터가 변하지 않으므로.
+
 
 
 ### 13.11.2 The probability density
+
+For categorical distributions, we can define the probability of a category. For example, a roll of a die, let’s call it $X$, can be 1,2,3,4,5 or 6. The probability of 4 is defined as:
+
+$Pr(X=4)=1/6$
+
+The CDF can then easily be defined:
+
+$F(4)=Pr(X≤4)=Pr(X=4)+Pr(X=3)+Pr(X=2)+Pr(X=1)$
+
+Although for continuous distributions the probability of a single value $Pr(X=x)$ is not defined, there is a theoretical definition that has a similar interpretation. The probability density at $x$ is defined as the function $f(a)$ such that:
+
+$F(a)=Pr(X≤a)=∫_(-∞)^a(f(x)dx)$
+
+적분.
+For those that know calculus, remember that the integral is related to a sum: it is the sum of bars with widths approximating 0. If you don’t know calculus, you can think of  $f(x)$ as a curve for which the area under that curve up to the value $a$, gives you the probability $Pr(X≤a)$.
+
+For example, to use the normal approximation to estimate the probability of someone being taller than 76 inches, we use:
+
+```{r}
+1 - pnorm(76, m, s)
+dnorm(76, m, s)
+#> [1] 0.0321
+```
+(뭐지..?)
+
+which mathematically is the grey area below:
+
+(그래프)
+
+The curve you see is the probability density for the normal distribution. In R, we get this using the function `dnorm`.
+음.. density 플롯해준다는 것인가 아니면 1 마이너스를 자동적으로 한다는 것인가. 뭐여?
+
+Although it may not be immediately obvious why knowing about probability densities is useful, understanding this concept will be essential to those wanting to fit models to data for which predefined functions are not available.
 
 
 
 ## 13.12 Monte Carlo simulations for continuous variables
 
+R provides functions to generate normally distributed outcomes. Specifically, the `rnorm` function takes three arguments: size, average (defaults to 0), and standard deviation (defaults to 1) and produces random numbers. Here is an example of how we could generate data that looks like our reported heights:
+
+```{r}
+n <- length(x)
+m <- mean(x)
+s <- sd(x)
+simulated_heights <- rnorm(n, m, s)
+```
+합해서 사이즈 n되는 데이터를 랜덤하게 생성한다는 것인 듯. 그런데 정규분포 종모양 닮은 것으로.
+
+Not surprisingly, the distribution looks normal:
+
+(그래프)
+
+This is one of the most useful functions in R as it will permit us to generate data that mimics natural events and answers questions related to what could happen by chance by running Monte Carlo simulations.
+이렇게 했을 때 어떤 모양 나타날 수 있냐 추측 정도 느낌인가?
+
+If, for example, we pick 800 males at random, what is the distribution of the tallest person? How rare is a seven footer in a group of 800 males? The following Monte Carlo simulation helps us answer that question:
+내가 다른 데이터에서 얻은 키 평균과 sd 정보를 이용해, 가상의 800명의 데이터를 얻었다고 생각하면 그 800명 분포는 대략 어떻게 나타날까?
+
+```{r}
+B <- 10000
+tallest <- replicate(B, {
+  simulated_data <- rnorm(800, m, s)
+  max(simulated_data)
+})
+```
+그러니까 이 tallest는, 평균과 sd 정보를 이용해 가상의 800명 데이터를 얻은 후 이 800명 제일 키 큰 사람의 키 정보를 tallest에 입력. 그런데 이렇게 1.데이터 얻고 2.가장 큰 키 정보 입력 ~이걸 B번 반복한다는 것이지?
+
+Having a seven footer is quite rare:
+
+```{r}
+mean(tallest >= 7*12)
+#> [1] 0.0184
+```
+가장 키 큰 사람 중 7*12와 같거나 보다 큰 사람은 몇 퍼센트냐. 가장 키 큰 사람 중에서도 얼마 안 되는군.
+
+Here is the resulting distribution:
+
+(그래프)
+
+Note that it does not look normal.
+이런 것도 의미 있는 데이터인가? 랜덤하게 얻은 최대 키 정보만 모아 놓는 것이 유효한 데이터임?
+
 
 
 ## 13.13 Continuous distributions
+
+We introduced the normal distribution in Section 8.8 and used it as an example above. The normal distribution is not the only useful theoretical distribution. Other continuous distributions that we may encounter are the student-t, Chi-square, exponential, gamma, beta, and beta-binomial. R provides functions to compute the density, the quantiles, the cumulative distribution functions and to generate Monte Carlo simulations. R uses a convention that lets us remember the names, namely using the letters `d`, `q`, `p`, and `r` in front of a shorthand for the distribution. We have already seen the functions `dnorm`, `pnorm`, and `rnorm` for the normal distribution. The functions `qnorm` gives us the quantiles. We can therefore draw a distribution like this:
+
+```{r}
+x <- seq(-4, 4, length.out = 100)
+qplot(x, f, geom = "line", data = data.frame(x, f = dnorm(x)))
+```
+(그래서 qnorm 설명은..?)
+
+For the student-t, described later in Section 16.10, the shorthand `t` is used so the functions are `dt` for the density, `qt` for the quantiles, `pt` for the cumulative distribution function, and `rt` for Monte Carlo simulation.
 
 
 
@@ -913,21 +1112,52 @@ qplot(N, lets_plot_2)
 
 1. Assume the distribution of female heights is approximated by a normal distribution with a mean of 64 inches and a standard deviation of 3 inches. If we pick a female at random, what is the probability that she is 5 feet or shorter?
 
+```{r}
+pnorm(60, 64, 3) *100
+```
+
+**9.121122%**
 
 
 2. Assume the distribution of female heights is approximated by a normal distribution with a mean of 64 inches and a standard deviation of 3 inches. If we pick a female at random, what is the probability that she is 6 feet or taller?
 
+```{r}
+(1 - pnorm(72, 64, 3))*100
+```
+
+**0.3830381%**
 
 
 3. Assume the distribution of female heights is approximated by a normal distribution with a mean of 64 inches and a standard deviation of 3 inches. If we pick a female at random, what is the probability that she is between 61 and 67 inches?
 
+```{r}
+(pnorm(67, 64, 3) - pnorm(61, 64, 3))*100
+```
+
+**68.26895%**
 
 
 4. Repeat the exercise above, but convert everything to centimeters. That is, multiply every height, including the standard deviation, by 2.54. What is the answer now?
 
+```{r}
+(pnorm(67*2.54, 64*2.54, 3*2.54) - pnorm(61*2.54, 64*2.54, 3*2.54))*100
+```
+
+**68.26895%**
+
+_**same.**_
 
 
 5. Notice that the answer to the question does not change when you change units. This makes sense since the answer to the question should not be affected by what units we use. In fact, if you look closely, you notice that 61 and 64 are both 1 SD away from the average. Compute the probability that a randomly picked, normally distributed random variable is within 1 SD from the average.
+(64가 아니라 67같은데..?)
+
+```{r}
+(pnorm(m + s, m, s) - pnorm(m - s, m, s))*100
+```
+
+**68.26895%**
+
+어떻게 하는 거지...?
 
 
 
@@ -945,18 +1175,59 @@ $Pr(Z) ≤ (a-m)/s$
 
 So, no matter the units, the probability of $X ≤ a$ is the same as the probability of a standard normal variable being less than $(a-m)/s$. If `mu` is the average and `sigma` the standard error, which of the following R code would give us the right answer in every situation:
 
-a. `mean(X<=a)`
+**a**. `mean(X<=a)`
 b. `pnorm((a - m)/s)`
 c. `pnorm((a - m)/s, m, s)`
 d. `pnorm(a)`
 
+```{r}
+pnorm((64 - m)/s, 0, 1)
+```
+
+(???)
 
 
 7. Imagine the distribution of male adults is approximately normal with an expected value of 69 and a standard deviation of 3. How tall is the male in the 99th percentile? Hint: use `qnorm`.
 
+```{r}
+qnorm(0.99, 69, 3)
+```
+
+**75.97904 inches**
+
+(?)
 
 
 8. The distribution of IQ scores is approximately normally distributed. The average is 100 and the standard deviation is 15. Suppose you want to know the distribution of the highest IQ across all graduating classes if 10,000 people are born each in your school district. Run a Monte Carlo simulation with `B=1000` generating 10,000 IQ scores and keeping the highest. Make a histogram.
 
 
+```{r}
+B <- 1000
 
+highest <- function(){
+  this_highest <-rnorm(10000, 100, 15)
+  max(this_highest)
+}
+whats_highest <- data.frame(height = replicate(B, highest()))
+
+ggplot(whats_highest, aes(x = height)) + geom_histogram(binwidth = 1)
+
+```
+
+
+```{r}
+B <-1000
+highest_2 <- replicate(B, {
+  simulated_heights_ <-rnorm(10000, 100, 15)
+  max(simulated_heights_)
+})
+
+highest <- data.frame(height = highest_2)
+
+ggplot(highest, aes(x = height)) + geom_histogram(binwidth = 1)
+```
+
+
+
+
+done!
