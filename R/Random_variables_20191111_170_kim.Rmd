@@ -1042,9 +1042,9 @@ data.frame(profit_in_millions=profit/10^6) %>%
 mean(profit)
 ```
 
-(1) -5.37e+08
+_(1) -5.37e+08_
 
-(2) -536940101
+_(2) -536940101_
 
 
 
@@ -1056,9 +1056,9 @@ sqrt(10000)*abs(x - loss_per_foreclosure)*sqrt(p*(1-p))
 sd(profit)
 ```
 
-(1) 9577583
+_(1) 9577583_
 
-(2) 9551437
+_(2) 9551437_
 
 
 5. Suppose we give out loans for $180,000. What should the interest rate be so that our expected value is 0?
@@ -1087,10 +1087,19 @@ x / 180000
 7. If the bank wants to minimize the probabilities of losing money, which of the following does not make interest rates go up?
 
 **a**. A smaller pool of loans.
+
 b. A larger probability of default.
+
 c. A smaller required probability of losing money.
+
 d. The number of Monte Carlo simulations.
+
 (어떤?)
+
+
+**a**
+
+
 
 
 
