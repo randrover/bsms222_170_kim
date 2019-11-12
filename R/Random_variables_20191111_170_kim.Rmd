@@ -5,6 +5,12 @@ output: html_notebook
 
 # Chapter 14 Random variables
 
+```{r}
+library(tidyr)
+library(ggplot2)
+```
+
+
 In data science, we often deal with data that is affected by chance in some way: the data comes from a random sample, the data is affected by measurement error, or the data measures some outcome that is random in nature. Being able to quantify the uncertainty introduced by randomness is one of the most important jobs of a data analyst. Statistical inference offers a framework, as well as several practical tools, for doing this. The first step is to learn how to mathematically describe random variables.
 
 In this chapter, we introduce random variables and their properties starting with their application to games of chance. **We then** describe some of the events surrounding the financial crisis of 2007-200846 using probability theory. This financial crisis was in part caused by underestimating the risk of certain securities47 sold by financial institutions.
@@ -182,7 +188,9 @@ Here we do not cover these details. Instead, we will discuss an incredibly usefu
 
 ## 14.4 Distributions versus probability distributions
 
-Before we continue, let’s make an important distinction and connection between the distribution of a list of numbers and a probability distribution. In the visualization chapter, we described how any list of numbers $x1,…,xn$ has a distribution. The definition is quite straightforward. We define $F(a)$ as the function that tells us what proportion of the list is less than or equal to $a$. Because they are useful summaries when the distribution is approximately normal, we define the average and standard deviation. These are defined with a straightforward operation of the vector containing the list of numbers `x`:
+Before we continue, let’s make an important distinction and connection between the distribution of a list of numbers and a probability distribution. In the visualization chapter, we described how any list of numbers $x1,…,xn$ has a distribution. The definition is quite straightforward.
+
+We define $F(a)$ as the function that tells us what proportion of the list is less than or equal to $a$. Because they are useful summaries when the distribution is approximately normal, we define the average and standard deviation. These are defined with a straightforward operation of the vector containing the list of numbers `x`:
 
 ```{r}
 m <- sum(x)/length(x)
@@ -192,14 +200,18 @@ s <- sqrt(sum((x - m)^2) / length(x))
 A random variable $X$ has a distribution function. To define this, we do not need a list of numbers. It is a theoretical concept. In this case, we define the distribution as the $F(a)$ that answers the question: what is the probability that $X$ is less than or equal to $a$? There is no list of numbers.
 
 However, if $X$ is defined by drawing from an urn with numbers in it, then there is a list: the list of numbers inside the urn. In this case, the distribution of that list is the probability distribution of $X$ and the average and standard deviation of that list are the expected value and standard error of the random variable.
+(average가 expected value, standard deviation이 standard error..)
 
 Another way to think about it that does not involve an urn is to run a Monte Carlo simulation and generate a very large list of outcomes of $X$. These outcomes are a list of numbers. The distribution of this list will be a very good approximation of the probability distribution of $X$. The longer the list, the better the approximation. The average and standard deviation of this list will approximate the expected value and standard error of the random variable.
+(이해가 아주 잘 되지는 않음..)
 
 
 
 ## 14.5 Notation for random variables
 
-In statistical textbooks, upper case letters are used to denote random variables and we follow this convention here. Lower case letters are used for observed values. You will see some notation that includes both. For example, you will see events defined as $X≤x$. Here $X$ is a random variable, making it a random event, and $x$ is an arbitrary value and not random. So, for example, $X$ might represent the number on a die roll and xx will represent an actual value we see 1, 2, 3, 4, 5, or 6. So in this case, the probability of $X=x$ is 1/6 regardless of the observed value $x$. This notation is a bit strange because, when we ask questions about probability, $X$ is not an observed quantity. Instead, it’s a random quantity that we will see in the future. We can talk about what we expect it to be, what values are probable, but not what it is. But once we have data, we do see a realization of $X$. So data scientists talk of what could have been after we see what actually happened.
+In statistical textbooks, upper case letters are used to denote random variables and we follow this convention here. Lower case letters are used for observed values. You will see some notation that includes both. For example, you will see events defined as $X≤x$. Here $X$ is a random variable, making it a random event, and $x$ is an arbitrary value and not random.
+
+So, for example, $X$ might represent the number on a die roll and xx will represent an actual value we see 1, 2, 3, 4, 5, or 6. So in this case, the probability of $X=x$ is 1/6 regardless of the observed value $x$. This notation is a bit strange because, when we ask questions about probability, $X$ is not an observed quantity. Instead, it’s a random quantity that we will see in the future. We can talk about what we expect it to be, what values are probable, but not what it is. But once we have data, we do see a realization of $X$. So data scientists talk of what could have been after we see what actually happened.
 
 
 
@@ -207,11 +219,12 @@ In statistical textbooks, upper case letters are used to denote random variables
 
 We have described sampling models for draws. We will now go over the mathematical theory that lets us approximate the probability distributions for the sum of draws. Once we do this, we will be able to help the casino predict how much money they will make. The same approach we use for the sum of draws will be useful for describing the distribution of averages and proportion which we will need to understand how polls work.
 
-The first important concept to learn is the expected value. In statistics books, it is common to use letter $E$ like this:
+The first important concept to learn is the _expected value_. In statistics books, it is common to use letter $E$ like this:
 
 E[X]
 
 to denote the expected value of the random variable $X$.
+(평균값이겠지?)
 
 A random variable will vary around its expected value in a way that if you take the average of many, many draws, the average of the draws will approximate the expected value, getting closer and closer the more draws you take.
 
@@ -229,6 +242,7 @@ mean(x)
 ```
 
 In general, if the urn has two possible outcomes, say $a$ and $b$, with proportions $p$ and $1−p$ respectively, the average is:
+(딱 두 가지 사건만 가능. a,와 b. a가 일어날 확률 p, b가 일어날 확률 1-p.)
 
 $E[X]=ap+b(1−p)$
 
@@ -260,6 +274,17 @@ $∣1−(−1)∣(√10/19×9/19)$ or:
 #> [1] 0.999
 ```
 
+The standard error tells us the typical difference between a random variable and its expectation. Since one draw is obviously the sum of just one draw, we can use the formula above to calculate that the random variable defined by one draw has an expected value of 0.05 and a standard error of about 1. This makes sense since we either get 1 or -1, with 1 slightly favored over -1.
+(기대값이 0.05라 1에 더 가깝다는 건가..? 음.. 기대값에서 대략 1정도 떨어져 있는 만큼 분산되어 있다는.. 거지?)
+
+Using the formula above, the sum of 1,000 people playing has standard error of about $32:
+
+```{r}
+n <- 1000
+sqrt(n) * 2 * sqrt(90)/19
+#> [1] 31.6
+```
+
 As a result, when 1,000 people bet on red, the casino is expected to win $50 with a standard error of $32. It therefore seems like a safe bet. But we still haven’t answered the question: how likely is it to lose money? Here the CLT will help.
 
 **Advanced note**: Before continuing we should point out that exact probability calculations for the casino winnings can be performed with the binomial distribution. However, here we focus on the CLT, which can be generally applied to sums of random variables in a way that the binomial distribution can’t.
@@ -275,13 +300,14 @@ library(dslabs)
 x <- heights$height
 m <- mean(x)
 s <- sqrt(mean((x-m)^2))
+# sd(x) 값 다르다..
 ```
 
 Using mathematical notation we write:
 
-
 $μ=(1/n)∑(n)(i=1)(x_i)$
 $σ =√((1/n)∑(n)(i=1)(x_i- μ)^2)$
+(편차 제곱의 평균.)
 
 However, be aware that the `sd` function returns a slightly different result:
 
@@ -291,8 +317,10 @@ identical(s, sd(x))
 s-sd(x)
 #> [1] -0.00194
 ```
+(그래. 달라)
 
 This is because the `sd` function R does not return the `sd` of the list, but rather uses a formula that estimates standard deviations of a population from a random sample $X_1,…,X_N$ which, for reasons not discussed here, divide the sum of squares by the $N−1$.
+(N-1을 사용함. N이 아니라.. 크기가 크기 때문이었던가..)
 
 $X=(1/N) ∑(N)(i=1)(X_i), s = √((1-(N-1)) ∑(N)(i=1)(X_i - X)^2)$
 
@@ -301,6 +329,7 @@ You can see that this is the case by typing:
 ```{r}
 n <- length(x)
 s-sd(x)*sqrt((n-1) / n)
+#위는 교정해준 거임. (n-1)/n으로 곱하면 분모의 n-1 사라지고 분모는 대신 n이 된다. 그래서 N-1을 사용해 sd를 구한 원래의 수학식에 맞게 같은 s가 나와서 차이가 0이 되는 것임.
 #> [1] 0
 ```
 
@@ -311,6 +340,7 @@ sqrt(mean((x-m)^2))
 ```
 
 So be careful when using the `sd` function in R. However, keep in mind that throughout the book we sometimes use the `sd` function when we really want the actual SD. This is because when the list size is big, these two are practically equivalent since $√((N-1)/N)≈1$.
+(list size 커지면 N이나 N-1이나 비슷해짐.)
 
 
 
@@ -319,6 +349,7 @@ So be careful when using the `sd` function in R. However, keep in mind that thro
 The Central Limit Theorem (CLT) tells us that when the number of draws, also called the _sample size_, is large, the probability distribution of the sum of the independent draws is approximately normal. Because sampling models are used for so many data generation processes, the CLT is considered one of the most important mathematical insights in history.
 
 Previously, we discussed that if we know that the distribution of a list of numbers is approximated by the normal distribution, all we need to describe the list are the average and standard deviation. We also know that the same applies to probability distributions. If a random variable has a probability distribution that is approximated with the normal distribution, then all we need to describe the probability distribution are the average and standard deviation, referred to as the expected value and standard error.
+(음..?반복?)
 
 We previously ran this Monte Carlo simulation:
 
@@ -337,8 +368,10 @@ The Central Limit Theorem (CLT) tells us that the sum $S$ is approximated by a n
 ```{r}
 n * (20-18)/38 
 #> [1] 52.6
+# +1, -1이라서 20/38-18/38이 된 건가.. 확률 구하는 게 아니고 실제 값 구할 땐 n을 곱해주고?
 sqrt(n) * 2 * sqrt(90)/19 
 #> [1] 31.6
+#커어.. 잘 이해 안 가네.
 ```
 
 The theoretical values above match those obtained with the Monte Carlo simulation:
@@ -385,10 +418,12 @@ There are several useful mathematical results that we used above and often emplo
 1. The expected value of the sum of random variables is the sum of each random variable’s expected value. We can write it like this:
 
 $E[X_1+X_2+⋯+X_n]=E[X_1]+E[X_2]+⋯+E[X_n]$
+합친 것의 기대값과 기대값 합친 값이 같다..
 
 If the $X$ are independent draws from the urn, then they all have the same expected value. Let’s call it $μ$ and thus:
 
 $E[X_1+X_2+⋯+X_n]=nμ$
+기대값 다 같으면 그냥 n 곱하기.
 
 which is another way of writing the result we show above for the sum of draws.
 
@@ -404,7 +439,7 @@ $E[(X_1+X_2+⋯+X_n)/n]=E[X_1+X_2+⋯+X_n]/n=nμ/n=μ$
 
 $SE[X_1+X_2+⋯+X_n]=√(SE[X_1]^2+SE[X_2]^2+⋯+SE[X_n]^2)$
 
-The square of the standard error is referred to as the variance in statistical textbooks. Note that this particular property is not as intuitive as the previous three and more in depth explanations can be found in statistics textbooks.
+The square of the standard error is referred to as the _variance_ in statistical textbooks. Note that this particular property is not as intuitive as the previous three and more in depth explanations can be found in statistics textbooks.
 
 4. The standard error of a non-random constant times a random variable is the non-random constant times the random variable’s standard error. As with the expectation:
 
@@ -422,7 +457,7 @@ $=σ/√n$
 
 5. If $X$ is a normally distributed random variable, then if $a$ and $b$ are non-random constants, $aX+b$ is also a normally distributed random variable. All we are doing is changing the units of the random variable by multiplying by $a$, then shifting the center by $b$.
 
-Note that statistical textbooks use the Greek letters $μ$ and $σ$ to denote the expected value and standard error, respectively. This is because $μ$ is the Greek letter for $m$, the first letter of mean, which is another term used for expected value. Similarly, $σ$ is the Greek letter for $s$, the first letter of standard error.
+Note that statistical textbooks use the Greek letters $μ$ and $σ$ to denote the expected value and standard error, respectively. This is because $μ$ is the Greek letter for $m$, the first letter of _mean_, which is another term used for expected value. Similarly, $σ$ is the Greek letter for $s$, the first letter of standard error.
 
 
 
@@ -444,73 +479,203 @@ Another funny misuse of the law of averages is in sports when TV sportscasters p
 
 1. In American Roulette you can also bet on green. There are 18 reds, 18 blacks and 2 greens (0 and 00). What are the chances the green comes out?
 
+```{r}
+2/38
+```
+
+**0.05263158**
+
 
 2. The payout for winning on green is $17 dollars.
 This means that if you bet a dollar and it lands on green, you get $17.
 Create a sampling model using sample to simulate the random variable $X$ for your winnings. Hint: see the example below for how it should look like when betting on red.
-($어떻게 쓰지..?)
+($어떻게 쓰지..?) (함수 `sample` 말하는 거겠지?)
 
 ```{r}
 x <- sample(c(1,-1), 1, prob = c(9/19, 10/19))
 ```
 
 
+
+```{r}
+X <- sample(c(17, -1), 1, prob = c(1/19, 18/19))
+```
+
+
 3. Compute the expected value of $X$.
+
+```{r}
+(17)*(1/19) + (-1)*(18/19)
+```
+
+**-0.05263158**
 
 
 4. Compute the standard error of $X$.
 
+```{r}
+abs((-1)-(17))*sqrt((18/19)*(1/19))
+```
+
+**4.019344**
+
 
 5. Now create a random variable $S$ that is the sum of your winnings after betting on green 1000 times. Hint: change the argument `size` and `replace` in your answer to question 2. Start your code by setting the seed to 1 with `set.seed(1)`.
+
+```{r}
+set.seed(1)
+S <- sample(c(17, -1), 1000, prob = c(1/19, 18/19), replace = TRUE)
+```
 
 
 6. What is the expected value of $S$?
 
+```{r}
+1000 * ((17)*(1/19) + (-1)*(18/19)) 
+```
+
+**-52.63158**
+
 
 7. What is the standard error of $S$?
+
+```{r}
+sqrt(1000) * 18 * sqrt(18)/19 
+```
+
+**127.1028**
 
 
 8. What is the probability that you end up winning money? Hint: use the CLT.
 
+```{r}
+mu <- 1000 * ((17)*(1/19) + (-1)*(18/19)) 
+se <-  sqrt(1000) * 18 * sqrt(18)/19 
+1- pnorm(0, mu, se)
+```
+
+**0.3394053**
+
 
 9. Create a Monte Carlo simulation that generates 1,000 outcomes of $S$. Compute the average and standard deviation of the resulting list to confirm the results of 6 and 7. Start your code by setting the seed to 1 with `set.seed(1)`.
 
+```{r}
+set.seed(1)
+B <- 1000
+roulette_winnings <- function(){
+  X <- sample(c(17, -1), 1000, prob = c(1/19, 18/19), replace = TRUE)
+  sum(X)
+}
+S <- replicate(B, roulette_winnings())
+```
+
+```{r}
+mean(S)
+sd(S)
+```
+
+
+**the expected value : -59.086**
+**the standard error : 125.672**
+
 
 10. Now check your answer to 8 using the Monte Carlo result.
+
+```{r}
+mean(S>0)
+```
+
+**0.324**
+very different..
 
 
 11. The Monte Carlo result and the CLT approximation are close, but not that close. What could account for this?
 
 a. 1,000 simulations is not enough. If we do more, they match.
-b. The CLT does not work as well when the probability of success is small. In this case, it was 1/19. If we make the number of roulette plays bigger, they will match better.
+**b**. The CLT does not work as well when the probability of success is small. In this case, it was 1/19. If we make the number of roulette plays bigger, they will match better.
 c. The difference is within rounding error.
 d. The CLT only works for averages.
 
 
 12. Now create a random variable $Y$ that is your average winnings per bet after playing off your winnings after betting on green 1,000 times.
 
+```{r}
+Y <- mean(sample(c(17, -1), 1000, prob = c(1/19, 18/19), replace = TRUE))
+Y
+```
+
+**-0.082**
+
 
 13. What is the expected value of $Y$?
+
+```{r}
+((17)*(1/19) + (-1)*(18/19))
+```
+
+**-0.05263158**
 
 
 14. What is the standard error of $Y$?
 
+```{r}
+18 * sqrt(18)/19 
+```
+
+**4.019344**
+
 
 15. What is the probability that you end up with winnings per game that are positive? Hint: use the CLT.
+
+```{r}
+mu_ <- ((17)*(1/19) + (-1)*(18/19)) 
+se_ <-  18 * sqrt(18)/19 
+1 - pnorm(0, mu_, se_)
+```
+
+**0.4947762**
+(??)
 
 
 16. Create a Monte Carlo simulation that generates 2,500 outcomes of $Y$. Compute the average and standard deviation of the resulting list to confirm the results of 6 and 7. Start your code by setting the seed to 1 with `set.seed(1)`.
 
+```{r}
+set.seed(1)
+B <- 2500
+roulette_winnings_Y <- function(){
+  Y <- sample(c(17, -1), 1000, prob = c(1/19, 18/19), replace = TRUE)
+  mean(Y)
+}
+S_ <- replicate(B, roulette_winnings_Y())
+#이게.. 1000을 밖에다 놓느냐 안에다 놓느냐가 차이가 엄청 큼. 안에 놓으면 1000개를 뽑아 그 평균 구하는 것이고, 밖에다 놓으면... 뭐지? n이 어디에 대입되는 것임..?
+
+mean(S_)
+sd(S_)
+```
+
+**average : -0.0543376**
+**standard deviation: 0.1259509**
+
 
 17. Now check your answer to 8 using the Monte Carlo result.
+
+```{r}
+mean(S_>0)
+```
+
+8 : **0.3394053**
+Molte Carlo : **0.3372**
+very similar..
 
 
 18. The Monte Carlo result and the CLT approximation are now much closer. What could account for this?
 
 a. We are now computing averages instead of sums.
 b. 2,500 Monte Carlo simulations is not better than 1,000.
-c. The CLT works better when the sample size is larger. We increased from 1,000 to 2,500.
+**c**. The CLT works better when the sample size is larger. We increased from 1,000 to 2,500.
 d. It is not closer. The difference is within rounding error.
+
+(YESSSS)
 
 
 
@@ -518,9 +683,16 @@ d. It is not closer. The difference is within rounding error.
 
 ### 14.11.1 Interest rates explained with chance model
 
-More complex versions of the sampling models we have discussed are also used by banks to decide interest rates. Suppose you run a small bank that has a history of identifying potential homeowners that can be trusted to make payments. In fact, historically, in a given year, only 2% of your customers default, meaning that they don’t pay back the money that you lent them. However, you are aware that if you simply loan money to everybody without interest, you will end up losing money due to this 2%. Although you know 2% of your clients will probably default, you don’t know which ones. Yet by charging everybody just a bit extra in interest, you can make up the losses incurred due to that 2% and also cover your operating costs. You can also make a profit, but if you set the interest rates too high, your clients will go to another bank. We use all these facts and some probability theory to decide what interest rate you should charge.
+More complex versions of the sampling models we have discussed are also used by banks to decide interest rates. Suppose you run a small bank that has a history of identifying potential homeowners that can be trusted to make payments.
 
-Suppose your bank will give out 1,000 loans for $180,000 this year. Also, after adding up all costs, suppose your bank loses $200,000 per foreclosure. For simplicity, we assume this includes all operational costs. A sampling model for this scenario can be coded like this:
+In fact, historically, in a given year, only 2% of your customers default, meaning that they don’t pay back the money that you lent them.
+(2%만 돈 안 갚음)
+
+However, you are aware that if you simply loan money to everybody without interest, you will end up losing money due to this 2%. Although you know 2% of your clients will probably default, you don’t know which ones. Yet by charging everybody just a bit extra in interest, you can make up the losses incurred due to that 2% and also cover your operating costs. You can also make a profit, but if you set the interest rates too high, your clients will go to another bank. We use all these facts and some probability theory to decide what interest rate you should charge.
+(고객들이 떠나가지 않을 정도로 낮으면서 & 돈 안 갚는 2%로 인해 발생하는 손실을 메꿀 정도로 높은 이자율.)
+
+Suppose your bank will give out 1,000 loans for $180,000 this year.
+Also, after adding up all costs, suppose your bank loses $200,000 per foreclosure(압류). For simplicity, we assume this includes all operational costs. A sampling model for this scenario can be coded like this:
 
 ```{r}
 n <- 1000
@@ -530,8 +702,12 @@ defaults <- sample( c(0,1), n, prob=c(1-p, p), replace = TRUE)
 sum(defaults * loss_per_foreclosure)
 #> [1] -5400000
 ```
+(총 잃은 돈인 듯..)
+(1800000달러를 1000번 빌려줬다는 건가?)
 
-Note that the total loss defined by the final sum is a random variable. Every time you run the above code, you get a different answer. We can easily construct a Monte Carlo simulation to get an idea of the distribution of this random variable.
+Note that the total loss defined by the final sum is a random variable.
+(그러니까 random variable은 실행할 때마다 변하는 변수 말하는 듯?!)
+Every time you run the above code, you get a different answer. We can easily construct a Monte Carlo simulation to get an idea of the distribution of this random variable.
 
 ```{r}
 B <- 10000
@@ -554,6 +730,9 @@ We can now set an interest rate to guarantee that, on average, we break even. Ba
 
 $lp+x(1−p)=0$
 
+(그러니까, x는 loan마다 붙이는 이자율? 내가 벌어들이는 돈인가?)
+(버는 돈 잃는 돈 플마제로가 되면 기대값 0인 것이겠지?)
+
 which implies $x$ is
 
 ```{r}
@@ -562,10 +741,13 @@ which implies $x$ is
 ```
 
 or an interest rate of 0.023.
+(??)
 
 However, we still have a problem. Although this interest rate guarantees that on average we break even, there is a 50% chance that we lose money. If our bank loses money, we have to close it down. We therefore need to pick an interest rate that makes it unlikely for this to happen. At the same time, if the interest rate is too high, our clients will go to another bank so we must be willing to take some risks. So let’s say that we want our chances of losing money to be 1 in 100, what does the $x$ quantity need to be now? This one is a bit harder. We want the sum $S$ to have:
 
 $Pr(S<0)=0.01$
+
+(돈 잃는 경우가 100에 한 번.)
 
 We know that $S$ is approximately normal. The expected value of $S$ is
 
@@ -625,6 +807,8 @@ Our interest rate now goes up to 0.035. This is still a very competitive interes
 loss_per_foreclosure*p + x*(1-p)
 #> [1] 2124
 ```
+(위의 이자율로 이 정도 벌어. per loan..)
+(그래! per ~는 n을 곱하는 것이 아니었던 것이다! 그렇지? 그런 듯.)
 
 which is a total expected profit of about:
 
@@ -654,16 +838,24 @@ mean(profit<0)
 
 ### 14.11.2 The Big Short
 
-One of your employees points out that since the bank is making 2,124 dollars per loan, the bank should give out more loans! Why just $n$? You explain that finding those $n$ clients was hard. You need a group that is predictable and that keeps the chances of defaults low. He then points out that even if the probability of default is higher, as long as our expected value is positive, you can minimize your chances of losses by increasing $n$ and relying on the law of large numbers.
+One of your employees points out that since the bank is making 2,124 dollars per loan, the bank should give out more loans! Why just $n$? You explain that finding those $n$ clients was hard. You need a group that is predictable and that keeps the chances of defaults low.
+(Default가 낮은 n이 있어야 함. 돈 안 갚는 인간들 비율이 낮은.)
+
+He then points out that even if the probability of default is higher, as long as our expected value is positive, you can minimize your chances of losses by increasing $n$ and relying on the law of large numbers.
+(n만 높으면 벌어들이는 절대값이 높아지니 default 높아도 되지 않나?! 라는 반문.)
 
 He claims that even if the default rate is twice as high, say 4%, if we set the rate just a bit higher than this value:
 
 ```{r}
 p <- 0.04
 r <- (- loss_per_foreclosure*p/(1-p)) / 180000
+#(x, 즉 loan당 이자) / (180000, 즉 loan당 빌려주는 돈) = 이자율!
+#- loss_per_foreclosure*p/(1-p) 이 식은 버는 돈 잃는 돈 플마제로일 때의 이자 값 아닌가? 그렇다면 이 때의 이자율보다 조금만 더 높으면 +가 된다는 것이겠지?
 r
 #> [1] 0.0463
 ```
+(이자율 조금만 더 높이면 된다~)
+(그러니까 저건. )
 
 we will profit. At 5%, we are guaranteed a positive expected value of:
 
@@ -673,12 +865,16 @@ x <- r*180000
 loss_per_foreclosure*p + x * (1-p)
 #> [1] 640
 ```
+(이자율 0.05면 이 정도 번다..)
 
 and can minimize our chances of losing money by simply increasing $n$ since:
 
 $Pr(S<0) = Pr(Z < -(E[S])/(SE[S]))$
 
 with $Z$ a standard normal random variable as shown earlier. If we define $μ$ and $σ$ to be the expected value and standard deviation of the urn, respectively (that is of a single loan), using the formulas above we have: $E[S]=nμ$ and $ SE[S]=√nσ$. So if we define $z$= `qnorm(0.01)`, we have:
+(E랑 SE가 n번 했을 때)
+(n이 개입하면 z = -sqrt(n)*μ / σ 가 되는 것인가.)
+(n기 개입하면 어쨌든 loan당 mean, sd가 그대로 적용되는 것이 아니라 E, SE로서 조금 변형되어 적용되는 거잖아?) (n에 따른 변화 보여주려는 듯)
 
 $−(nμ)/√nσ = −(√nμ)/σ = z$
 
@@ -686,7 +882,12 @@ which implies that if we let:
 
 $n≥z^2σ^2/μ^2$
 
+(왜 =가 아니고 같거나 큰 거지?)
+
 we are guaranteed to have a probability of less than 0.01. The implication is that, as long as $μ$ is positive, we can find an $n$ that minimizes the probability of a loss. This is a form of the law of large numbers: when $n$ is large, our average earnings per loan converges to the expected earning $μ$.
+
+(loan당 버는 돈이 +일 때, n키우면 z도 올라가고.. 음? z가 줄어야 하나..? z가 더 -로 가야 하는 건가..? 그래야 0.01에서 줄어드나..)
+(n이 커지면 loan당 버는 돈이 평균에 수렴..)
 
 With $x$ fixed, now we can ask what $n$ do we need for the probability to be 0.01? In our example, if we give out:
 
@@ -696,6 +897,7 @@ n <- ceiling((z^2*(x-l)^2*p*(1-p))/(l*p + x*(1-p))^2)
 n
 #> [1] 22163
 ```
+(이 경우 x와 p가 변했지.. p에 맞게 이자율 높이고. 그 이자율에 맞게 이자 x 구하고. z는 0.01을 이용해 고정하기로 했고. 그럼 남은 변수인 n을 구할 수 있군..)
 
 loans, the probability of losing is about 0.01 and we are expected to earn a total of
 
@@ -724,20 +926,30 @@ Your colleague’s scheme was mainly based on this mathematical formula:
 
 $SE[(X_1+X_2+⋯+X_n)/n]=σ/√n$
 
-By making $n$ large, we minimize the standard error of our per-loan profit. However, for this rule to hold, the $X$s must be independent draws: one person defaulting must be independent of others defaulting. Note that in the case of averaging the same event over and over, an extreme example of events that are not independent, we get a standard error that is $√n$ times bigger:
+By making $n$ large, we minimize the standard error of our per-loan profit. However, for this rule to hold, the $X$s must be independent draws: one person defaulting must be independent of others defaulting. Note that in the case of averaging the **same** event over and over, an extreme example of events that are not independent, we get a standard error that is $√n$ times bigger:
+
+(어떤 사람의 defualt가 다른 사람의 defualt에 영향 미치지 않아야 함..)
 
 $SE[(X_1+X_2+⋯+X_n)/n] = SE[nX_1/n]=σ>σ/√n$
 
+(?? Same event가 의미하는 바는..?)
+
 To construct a more realistic simulation than the original one your colleague ran, let’s assume there is a global event that affects everybody with high-risk mortgages and changes their probability. We will assume that with 50-50 chance, all the probabilities go up or down slightly to somewhere between 0.03 and 0.05. But it happens to everybody at once, not just one person. These draws are no longer independent.
+
+(0.04가 defualt 확률이었는데 0.01만큼 올라가거나 drop..)
 
 ```{r}
 p <- 0.04
 x <- 0.05*180000
+# 이자율에 따른 이자
 profit <- replicate(B, {
     new_p <- 0.04 + sample(seq(-0.01, 0.01, length = 100), 1)
+    # 개개인마다 다른 p
     draws <- sample( c(x, loss_per_foreclosure), n, 
                         prob=c(1-new_p, new_p), replace = TRUE) 
+    # 그 개개인이 돈 갚아서 은행이 벌든가 돈 안 갚아서 은행이 돈 잃든가. 돈 잃을 확률이 p
     sum(draws)
+    # 은행이 벌거나 잃은 돈 합산
 })
 ```
 
@@ -754,6 +966,7 @@ However, the probability of the bank having negative earnings shoots up to:
 mean(profit<0)
 #> [1] 0.349
 ```
+(돈 잃을 각개 케이스 증가?!)
 
 Even scarier is that the probability of losing more than 10 million dollars is:
 
@@ -770,7 +983,7 @@ data.frame(profit_in_millions=profit/10^6) %>%
   geom_histogram(color="black", binwidth = 5)
 ```
 
-(그래프)
+(갚은 사람도 안 갚은 사람도 많군..)
 
 The theory completely breaks down and the random variable has much more variability than expected. The financial meltdown of 2007 was due, among other things, to financial “experts” assuming independence when there was none.
 
@@ -779,31 +992,106 @@ The theory completely breaks down and the random variable has much more variabil
 ## 14.12 Exercises
 
 1. Create a random variable $S$ with the earnings of your bank if you give out 10,000 loans, the default rate is 0.3, and you lose $200,000 in each foreclosure. Hint: use the code we showed in the previous section, but change the parameters.
+(나는 얼마를 빌려주는 거지?)
+
+```{r}
+p <- 0.3
+loss_per_foreclosure <- -200000
+default <- sample(c(0, 1), 10000, prob = c(1-p, p), replace = TRUE)
+S <- sum(defaults * loss_per_foreclosure)
+S
+```
+
+```{r}
+S <- sample( c(x, loss_per_foreclosure), 10000, 
+                        prob=c(1-p, p), replace = TRUE) 
+sum(S)
+```
+
 
 
 2. Run a Monte Carlo simulation with 10,000 outcomes for $S$. Make a histogram of the results.
 
+```{r}
+p <- 0.3
+x <- 0.05*180000
+B <- 10000
+#...
+profit <- replicate(B, {
+    draws <- sample( c(x, loss_per_foreclosure), 10000, 
+                        prob=c(1-p, p), replace = TRUE)  
+    sum(draws)
+})
+mean(profit)
+```
+
+```{r}
+data.frame(profit_in_millions=profit/10^6) %>% 
+  ggplot(aes(profit_in_millions)) + 
+  geom_histogram(fill="pink", color = "red", binwidth = 5)
+```
+
+
+
 
 3. What is the expected value of $S$?
+
+```{r}
+10000*(p*loss_per_foreclosure + (1-p)*x)
+
+mean(profit)
+```
+
+(1) -5.37e+08
+
+(2) -536940101
+
 
 
 4. What is the standard error of $S$?
 
+```{r}
+sqrt(10000)*abs(x - loss_per_foreclosure)*sqrt(p*(1-p))
+
+sd(profit)
+```
+
+(1) 9577583
+
+(2) 9551437
+
 
 5. Suppose we give out loans for $180,000. What should the interest rate be so that our expected value is 0?
+
+```{r}
+r <- (- loss_per_foreclosure*p/(1-p)) / 180000
+r
+```
+
+**0.4761905**
 
 
 6. (Harder) What should the interest rate be so that the chance of losing money is 1 in 20? In math notation, what should the interest rate be so that $Pr(S<0) = 0.05$?
 
+```{r}
+
+l <- loss_per_foreclosure
+z <- qnorm(1/20)
+x <- -l*( n*p - z*sqrt(n*p*(1-p)))/ ( n*(1-p) + z*sqrt(n*p*(1-p)))
+x / 180000
+```
+
+**0.4877552**
+
 
 7. If the bank wants to minimize the probabilities of losing money, which of the following does not make interest rates go up?
 
-a. A smaller pool of loans.
+**a**. A smaller pool of loans.
 b. A larger probability of default.
 c. A smaller required probability of losing money.
 d. The number of Monte Carlo simulations.
+(어떤?)
 
 
 
-
-
+done!
