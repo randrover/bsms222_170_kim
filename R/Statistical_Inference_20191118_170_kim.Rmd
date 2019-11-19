@@ -89,12 +89,16 @@ Note that in the four random samples shown above, the sample proportions range f
 ### 15.2.1 The sample average
 
 Conducting an opinion poll is being modeled as taking a random sample from an urn. We are proposing the use of the proportion of blue beads in our sample as an estimate of the parameter $p$. Once we have this estimate, we can easily report an estimate for the spread $2p-1$, but for simplicity we will illustrate the concepts for estimating $p$. We will use our knowledge of probability to defend our use of the sample proportion and quantify how close we think it is from the population proportion $p$.
+(샘플 확률과 p가 얼마나 가까운가?)
 
-We start by defining the random variable $X$ as: $X=1$ if we pick a blue bead at random and $X=0$ if it is red. This implies that the population is a list of 0s and 1s. If we sample $N$ beads, then the average of the draws $X_1,…,X_N$ is equivalent to the proportion of blue beads in our sample. This is because adding the $X$s is equivalent to counting the blue beads and dividing this count by the total $N$ is equivalent to computing a proportion. We use the symbol $X$ to represent this average. In general, in statistics textbooks a bar on top of a symbol means the average. The theory we just learned about the sum of draws becomes useful because the average is a sum of draws multiplied by the constant $1/N$:
+We start by defining the random variable $X$ as: $X=1$ if we pick a blue bead at random and $X=0$ if it is red. This implies that the population is a list of 0s and 1s. If we sample $N$ beads, then the average of the draws $X_1,…,X_N$ is equivalent to the proportion of blue beads in our sample. This is because adding the $X$s is equivalent to counting the blue beads and dividing this count by the total $N$ is equivalent to computing a proportion. We use the symbol $X'$ to represent this average. In general, in statistics textbooks a bar on top of a symbol means the average. The theory we just learned about the sum of draws becomes useful because the average is a sum of draws multiplied by the constant $1/N$:
+(블루 비드가 1. 1의 모음, 즉 X의 합이 블루 비드 개수. 전체 분의 블루 비드 개수가 블루 비드의 proportion.)
+(X위에 -가 있는 것이 평균. 편의상 X'라고 표현하겠음..)
 
-$X=1/N×∑(N)(i=1)(X_i)$
+$X'=1/N×∑(N)(i=1)(X_i)$
 
 For simplicity, let’s assume that the draws are independent: after we see each sampled bead, we return it to the urn. In this case, what do we know about the distribution of the sum of draws? First, we know that the expected value of the sum of draws is $N$ times the average of the values in the urn. We know that the average of the 0s and 1s in the urn must be $p$, the proportion of blue beads.
+(the sum of draws = (블루 비드 개수)/(전체) * N = the average * N)
 
 Here we encounter an important difference with what we did in the Probability chapter: we don’t know what is in the urn. We know there are blue and red beads, but we don’t know how many of each. This is what we want to find out: we are trying to **estimate $p$**.
 
@@ -102,46 +106,54 @@ Here we encounter an important difference with what we did in the Probability ch
 
 ### 15.2.2 Parameters
 
-Just like we use variables to define unknowns in systems of equations, in statistical inference we define parameters to define unknown parts of our models. In the urn model which we are using to mimic an opinion poll, we do not know the proportion of blue beads in the urn. We define the parameters $p$ to represent this quantity. $p$ is the average of the urn because if we take the average of the 1s (blue) and 0s (red), we get the proportion of blue beads. Since our main goal is figuring out what is $p$, we are going to estimate this parameter.
+Just like we use variables to define unknowns in systems of equations, in statistical inference we define _parameters_ to define unknown parts of our models. In the urn model which we are using to mimic an opinion poll, we do not know the proportion of blue beads in the urn. We define the parameters $p$ to represent this quantity. $p$ is the average of the urn because if we take the average of the 1s (blue) and 0s (red), we get the proportion of blue beads. Since our main goal is figuring out what is $p$, we are going to _estimate this parameter_.
 
 The ideas presented here on how we estimate parameters, and provide insights into how good these estimates are, extrapolate to many data science tasks. For example, we may want to determine the difference in health improvement between patients receiving treatment and a control group. We may ask, what are the health effects of smoking on a population? What are the differences in racial groups of fatal shootings by police? What is the rate of change in life expectancy in the US during the last 10 years? All these questions can be framed as a task of estimating a parameter from a sample.
+(extrapolate 추론하다)
 
 
 
 ### 15.2.3 Polling versus forecasting
 
 Before we continue, let’s make an important clarification related to the practical problem of forecasting the election. If a poll is conducted four months before the election, it is estimating the $p$ for that moment and not for election day. The $p$ for election night might be different since people’s opinions fluctuate through time. The polls provided the night before the election tend to be the most accurate since opinions don’t change that much in a day. However, forecasters try to build tools that model how opinions vary across time and try to predict the election night results taking into consideration the fact that opinions fluctuate. We will describe some approaches for doing this in a later section.
+(시간에 따라 의견이 변화하는 것도 변수로 취급?)
 
 
 
 ### 15.2.4 Properties of our estimate: expected value and standard error
 
-To understand how good our estimate is, we will describe the statistical properties of the random variable defined above: the sample proportion $X$. Remember that $X$ is the sum of independent draws so the rules we covered in the probability chapter apply.
+To understand how good our estimate is, we will describe the statistical properties of the random variable defined above: the sample proportion $X'$. Remember that $X'$ is the sum of independent draws so the rules we covered in the probability chapter apply.
 
-Using what we have learned, the expected value of the sum $NX$ is $N×$ the average of the urn, $p$. So dividing by the non-random constant $N$ gives us that the expected value of the average $X$ is $p$. We can write it using our mathematical notation:
+Using what we have learned, the expected value of the sum $NX'$ is $N×$ the average of the urn, $p$. So dividing by the non-random constant $N$ gives us that the expected value of the average $X'$ is $p$. We can write it using our mathematical notation:
 
-$E(X) = p$
+$E(X') = p$
 
 We can also use what we learned to figure out the standard error: the standard error of the sum is $√N×$ the standard deviation of the urn. Can we compute the standard error of the urn? We learned a formula that tells us that it is $(1−0)√p(1−p) = √p(1−p)$. Because we are dividing the sum by $N$, we arrive at the following formula for the standard error of the average:
 
-$SE(X) = √p(1−p)/N$
+$SE(X') = √p(1−p)/N$
+(음..)
 
 This result reveals the power of polls. The expected value of the sample proportion $X$ is the parameter of interest $p$ and we can make the standard error as small as we want by increasing $N$. The law of large numbers tells us that with a large enough poll, our estimate converges to $p$.
+(N이 크면 SE(X') 줄어들고.. 우리는 p를 구하는 거니까? 그냥 X였다면.. 안 줄었겠지?)
 
 If we take a large enough poll to make our standard error about 1%, we will be quite certain about who will win. But how large does the poll have to be for the standard error to be this small?
 
 One problem is that we do not know $p$, so we can’t compute the standard error. However, for illustrative purposes, let’s assume that $p=0.51$ and make a plot of the standard error versus the sample size $N$:
+(p를 모르므로 SE를 계산할 수가 없어..!)
 
 (그래프)
+SE와 N이 반비례
 
 From the plot we see that we would need a poll of over 10,000 people to get the standard error that low. We rarely see polls of this size due in part to costs. From the Real Clear Politics table, we learn that the sample sizes in opinion polls range from 500-3,500 people. For a sample size of 1,000 and $p=0.51$, the standard error is:
 
 ```{r}
+p<-0.51
 sqrt(p*(1-p))/sqrt(1000)
 #> [1] 0.0158
 ```
 
-or 1.5 percentage points. So even with large polls, for close elections, $X$ can lead us astray if we don’t realize it is a random variable. Nonetheless, we can actually say more about how close we get the $p$ and we do that in Section.
+or 1.5 percentage points. So even with large polls, for close elections, $X'$ can lead us astray if we don’t realize it is a random variable. Nonetheless, we can actually say more about how close we get the $p$ and we do that in Section.
+(astray 잘못된 길로 빠지게 함)
 
 
 
@@ -149,44 +161,115 @@ or 1.5 percentage points. So even with large polls, for close elections, $X$ can
 
 1. Suppose you poll a population in which a proportion $p$ of voters are Democrats and $1 - p$ are Republicans. Your sample size is $N = 25$. Consider the random variable $S$ which is the **total** number of Democrats in your sample. What is the expected value of this random variable? Hint: it’s a function of $p$.
 
+```{r}
+N <- 25
+S <- N*p
+N*p*N/N
+```
+
+**N*p**
+
 
 
 2. What is the standard error of $S$ ? Hint: it’s a function of $p$.
 
 
-
-3. Consider the random variable $S/N$. This is equivalent to the sample average, which we have been denoting as $X$. What is the expected value of the $X$? Hint: it’s a function of $p$.
-
+**√(N*p*(1-p))**
 
 
-4. What is the standard error of $X$? Hint: it’s a function of $p$.
+3. Consider the random variable $S/N$. This is equivalent to the sample average, which we have been denoting as $X'$. What is the expected value of the $X$? Hint: it’s a function of $p$.
+
+**p**
+
+
+
+4. What is the standard error of $X'$? Hint: it’s a function of $p$.
+
+**√(p*(1-p)/N)**
 
 
 
 5. Write a line of code that gives you the standard error `se` for the problem above for several values of $p$, specifically for `p <- seq(0, 1, length = 100)`. Make a plot of `se` versus `p`.
 
+```{r}
+N <- 25
+p <- seq(0, 1, length = 100)
+se <- sqrt(p*(1-p)/N)
+
+mk <- data.frame(p = p, se = se)
+
+ggplot(mk) + geom_line(aes(x = p, y = se))
+```
+
+??
 
 
 6. Copy the code above and put it inside a for-loop to make the plot for $N=25$, $N=100$, and $N=1000$.
 
+```{r}
+N <- c(25, 100, 1000)
+
+for(X in 1:3){
+  p <- seq(0, 1, length = 100)
+  se <- sqrt(p*(1-p)/N[X])
+
+  mk <- data.frame(p = p, se = se)
+
+  print(ggplot(mk) + geom_line(aes(x = p, y = se)))
+}
+#print를 꼭 써줘야 하는군?
+#for(X in c(1, 2, 3))도 되는 듯
+```
+
+(SE 줄어들고 있다?)
 
 
-7. If we are interested in the difference in proportions, $p−(1−p)$, our estimate is $d=X−(1−X)$. Use the rules we learned about sums of random variables and scaled random variables to derive the expected value of $d$.
+7. If we are interested in the difference in proportions, $p−(1−p)$, our estimate is $d=X'−(1−X')$. Use the rules we learned about sums of random variables and scaled random variables to derive the expected value of $d$.
 
+```{r}
+d <- 2*p - 1
+N*sum(d)/length(d)
+```
+
+**1.998401e-15**
+
+N*sum(d)/length(d)
 
 
 8. What is the standard error of $d$?
+
+```{r}
+sqrt(N)*sqrt(abs(d*(1-d)))
+```
+
 
 
 
 9. If the actual $p=.45$, it means the Republicans are winning by a relatively large margin since $d=−.1$, which is a 10% margin of victory. In this case, what is the standard error of $2X−1$ if we take a sample of $N=25$?
 
+```{r}
+N<-25
+p <- 0.45
+d <- -0.1
+sqrt(d*(1-d))/sqrt(N)
+
+X_X <- sample(c(1, 0), size = N, replace = TRUE, prob = c(p, 1-p))
+X_bar <- mean(X_X)
+margin <- 2*X_bar - 1
+sqrt(margin*(1-margin)/N)
+
+X_etc <- X_X*2 -1
+sd(X_etc)
+
+```
+
+(?)
 
 
 10. Given the answer to 9, which of the following best describes your strategy of using a sample size of $N=25$?
 
 a. The expected value of our estimate $2X−1$ is $d$, so our prediction will be right on.
-b. Our standard error is larger than the difference, so the chances of $2X−1$ being positive and throwing us off were not that small. We should pick a larger sample size.
+**b**. Our standard error is larger than the difference, so the chances of $2X−1$ being positive and throwing us off were not that small. We should pick a larger sample size.
 c. The difference is 10% and the standard error is about 0.2, therefore much smaller than the difference.
 d. Because we don’t know $p$, we have no way of knowing that making $N$ larger would actually improve our standard error.
 
@@ -194,27 +277,32 @@ d. Because we don’t know $p$, we have no way of knowing that making $N$ larger
 
 ## 15.4 Central Limit Theorem in practice
 
-The CLT tells us that the distribution function for a sum of draws is approximately normal. We also learned that dividing a normally distributed random variable by a constant is also a normally distributed variable. This implies that the distribution of $X$ is approximately normal.
+The CLT tells us that the distribution function for a sum of draws is approximately normal. We also learned that dividing a normally distributed random variable by a constant is also a normally distributed variable. This implies that the distribution of $X'$ is approximately normal.
+(정상분포다..?)
 
-In summary, we have that $X$ has an approximately normal distribution with expected value $p$ and standard error $√p(1−p)/N$.
+In summary, we have that $X'$ has an approximately normal distribution with expected value $p$ and standard error $√p(1−p)/N$.
 
 Now how does this help us? Suppose we want to know what is the probability that we are within 1% from $p$. We are basically asking what is
+(p가.. 모집단 비율인 거지..?)
 
-$Pr(|X−p|≤.01)$
+$Pr(|X'−p|≤.01)$
 
 which is the same as:
 
-$Pr(X≤p+.01)−Pr(X≤p−.01)$
+$Pr(X'≤p+.01)−Pr(X'≤p−.01)$
+(p로부터 0.01 플러스 마이너스)
 
-Can we answer this question? We can use the mathematical trick we learned in the previous chapter. Subtract the expected value and divide by the standard error to get a standard normal random variable, call it $Z$, on the left. Since $p$ is the expected value and $SE(X)=√p(1−p)/N$ is the standard error we get:
+Can we answer this question? We can use the mathematical trick we learned in the previous chapter. Subtract the expected value and divide by the standard error to get a standard normal random variable, call it $Z$, on the left. Since $p$ is the expected value and $SE(X')=√p(1−p)/N$ is the standard error we get:
 
-$Pr(Z≤(.01/SE(X))) - Pr(Z≤(-.01/SE(X)))$
+$Pr(Z≤(.01/SE(X'))) - Pr(Z≤(-.01/SE(X')))$
 
-One problem we have is that since we don’t know $p$, we don’t know $SE(X)$. But it turns out that the CLT still works if we estimate the standard error by using $X$ in place of $p$. We say that we plug-in the estimate. Our estimate of the standard error is therefore:
+One problem we have is that since we don’t know $p$, we don’t know $SE(X)$. But it turns out that the CLT still works if we estimate the standard error by using $X$ in place of $p$. We say that we _plug-in_ the estimate. Our estimate of the standard error is therefore:
+(X'를 p 대신 써도 된다..)
 
-$SE(X)=√X(1−X)/N$
+$SE(X')=√(X'(1−X')/N)$
 
 In statistics textbooks, we use a little hat to denote estimates. The estimate can be constructed using the observed data and $N$.
+(estimates 위에 작은 꼬깔 표시 있음.)
 
 Now we continue with our calculation, but dividing by $SE(X)=√X(1−X)/N)$ instead. In our first sample we had 12 blue and 13 red so $X=0.48$ and our estimate of standard error is:
 
@@ -234,7 +322,7 @@ pnorm(0.01/se) - pnorm(-0.01/se)
 
 Therefore, there is a small chance that we will be close. A poll of only $N=25$ people is not really very useful, at least not for a close election.
 
-Earlier we mentioned the _margin of error_. Now we can define it because it is simply two times the standard error, which we can now estimate. In our case it is:
+Earlier we mentioned the _margin of error_. Now we can define it because it is simply **two times the standard error**, which we can now estimate. In our case it is:
 
 ```{r}
 1.96*se
@@ -243,7 +331,7 @@ Earlier we mentioned the _margin of error_. Now we can define it because it is s
 
 Why do we multiply by 1.96? Because if you ask what is the probability that we are within 1.96 standard errors from $p$, we get:
 
-$Pr(Z≤1.96SE(X)/SE(X))−Pr(Z≤−1.96SE(X)/SE(X))$
+$Pr(Z≤1.96SE(X')/SE(X'))−Pr(Z≤−1.96SE(X')/SE(X'))$
 
 which is:
 
@@ -256,11 +344,11 @@ pnorm(1.96)-pnorm(-1.96)
 #> [1] 0.95
 ```
 
-Hence, there is a 95% probability that $X$ will be within $1.96×SE(X)$, in our case within about 0.2, of $p$. Note that 95% is somewhat of an arbitrary choice and sometimes other percentages are used, but it is the most commonly used value to define margin of error. We often round 1.96 up to 2 for simplicity of presentation.
+Hence, there is a 95% probability that $X'$ will be within $1.96×SE(X')$, in our case within about 0.2, of $p$. Note that 95% is somewhat of an arbitrary choice and sometimes other percentages are used, but it is the most commonly used value to define margin of error. We often round 1.96 up to 2 for simplicity of presentation.
 
 In summary, the CLT tells us that our poll based on a sample size of $25$ is not very useful. We don’t really learn much when the margin of error is this large. All we can really say is that the popular vote will not be won by a large margin. This is why pollsters tend to use larger sample sizes.
 
-From the table above, we see that typical sample sizes range from 700 to 3500. To see how this gives us a much more practical result, notice that if we had obtained a $X$=0.48 with a sample size of 2,000, our standard error $SE(X)$ would have been 0.011. So our result is an estimate of 48% with a margin of error of 2%. In this case, the result is much more informative and would make us think that there are more red balls than blue. Keep in mind, however, that this is hypothetical. We did not take a poll of 2,000 since we don’t want to ruin the competition.
+From the table above, we see that typical sample sizes range from 700 to 3500. To see how this gives us a much more practical result, notice that if we had obtained a $X$=0.48 with a sample size of 2,000, our standard error $SE(X)$ would have been 0.011. So our result is an estimate of `48`% with a margin of error of 2%. In this case, the result is much more informative and would make us think that there are more red balls than blue. Keep in mind, however, that this is hypothetical. We did not take a poll of 2,000 since we don’t want to ruin the competition.
 
 
 
@@ -318,7 +406,8 @@ Of course, in real life we would never be able to run such an experiment because
 
 ### 15.4.2 The spread
 
-The competition is to predict the spread, not the proportion $p$. However, because we are assuming there are only two parties, we know that the spread is $p−(1−p)=2p−1$. As a result, everything we have done can easily be adapted to an estimate of $2p−1$. Once we have our estimate $X$ and $SE(X)$, we estimate the spread with $2X−1$ and, since we are multiplying by 2, the standard error is $2SE(X)$. Note that subtracting 1 does not add any variability so it does not affect the standard error.
+The competition is to predict the spread, not the proportion $p$. However, because we are assuming there are only two parties, we know that the spread is $p−(1−p)=2p−1$. As a result, everything we have done can easily be adapted to an estimate of $2p−1$. Once we have our estimate $X'$ and $SE(X')$, we estimate the spread with $2X'−1$ and, since we are multiplying by 2, the standard error is $2SE(X')$. Note that subtracting 1 does not add any variability so it does not affect the standard error.
+(-1은 SE에 영향 없다..)
 
 For our 25 item sample above, our estimate $p$ is `.48` with margin of error `.20` and our estimate of the spread is `0.04` with margin of error `.40`. Again, not a very useful sample size. However, the point is that once we have an estimate and standard error for $p$, we have it for the spread $2p−1$.
 
@@ -336,15 +425,31 @@ One reason is that running such a poll is very expensive. Another possibly more 
 
 ## 15.5 Exercises
 
-1. Write an urn model function that takes the proportion of Democrats $p$ and the sample size $N$ as arguments and returns the sample average if Democrats are 1s and Republicans are 0s. Call the function `take_sample`.
+1. Write an _urn model_ function that takes the proportion of Democrats $p$ and the sample size $N$ as arguments and returns the sample average if Democrats are 1s and Republicans are 0s. Call the function `take_sample`.
+
+```{r}
+take_sample <- function(){
+  x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
+  mean(x)
+}
+```
 
 
 
 2. Now assume `p <- 0.45` and that your sample size is $N=100$. Take a sample 10,000 times and save the vector of `mean(X) - p` into an object called `errors`. Hint: use the function you wrote for exercise 1 to write this in one line of code.
 
+```{r}
+p <- 0.45
+N <- 100
+B <- 10000
+errors <- replicate(B, take_sample())
+erros <- errors - p
+```
+
+(replicate의 argument func에 () 안 붙이면 list가 되는군?)
 
 
-3. The vector `errors` contains, for each simulated sample, the difference between the actual $p$ and our estimate $X$. We refer to this difference as the error. Compute the average and make a histogram of the errors generated in the Monte Carlo simulation and select which of the following best describes their distributions:
+3. The vector `errors` contains, for each simulated sample, the difference between the actual $p$ and our estimate $X$. We refer to this difference as the _error_. Compute the average and make a histogram of the errors generated in the Monte Carlo simulation and select which of the following best describes their distributions:
 
 ```{r}
 mean(errors)
@@ -353,40 +458,113 @@ hist(errors)
 
 a. The errors are all about 0.05.
 b. The errors are all about -0.05.
-c. The errors are symmetrically distributed around 0.
+**c**. The errors are symmetrically distributed around 0.
 d. The errors range from -1 to 1.
 
+**c**
 
 
 4. The error $X - p$ is a random variable. In practice, the error is not observed because we do not know $p$. Here we observe it because we constructed the simulation. What is the average size of the error if we define the size by taking the absolute value $|X - p|$?
 
+```{r}
+mean(abs(errors))
+```
+
+**0.039945**
+
+bigger..
 
 
 5. The standard error is related to the typical **size** of the error we make when predicting. We say **size** because we just saw that the errors are centered around 0, so thus the average error value is 0. For mathematical reasons related to the Central Limit Theorem, we actually use the standard deviation of `errors` rather than the average of the absolute values to quantify the typical size. What is this standard deviation of the errors?
 
+```{r}
+sd(errors)
+```
+
+**0.0499963**
 
 
 6. The theory we just learned tells us what this standard deviation is going to be because it is the standard error of $X$. What does theory tell us is the standard error of $X$ for a sample size of 100?
 
+```{r}
+sqrt(p*(1-p)/N)
+```
+
+**0.04974937**
 
 
-7. In practice, we don’t know $p$, so we construct an estimate of the theoretical prediction based by plugging in $X$ for $p$. Compute this estimate. Set the seed at 1 with `set.seed(1)`.
+
+7. In practice, we don’t know $p$, so we construct an estimate of the theoretical prediction based by plugging in $X'$ for $p$. Compute this estimate. Set the seed at 1 with `set.seed(1)`.
+
+```{r}
+set.seed(1)
+X_hat <- take_sample()
+sqrt(X_hat*(1-X_hat)/N)
+```
+
+**0.04983974**
+
+(sd, p, X_hat 사용 ~> 다 비슷 SE.)
 
 
+8. Note how close the standard error estimates obtained from the Monte Carlo simulation (exercise 5), the theoretical prediction (exercise 6), and the estimate of the theoretical prediction (exercise 7) are. The theory is working and it gives us a practical approach to knowing the typical error we will make if we predict $p$ with $X'$. Another advantage that the theoretical result provides is that it gives an idea of how large a sample size is required to obtain the precision we need. Earlier we learned that the largest standard errors occur for $p = 0.5$. Create a plot of the largest standard error for $N$ ranging from 100 to 5,000. Based on this plot, how large does the sample size have to be to have a standard error of about 1%?
 
-8. Note how close the standard error estimates obtained from the Monte Carlo simulation (exercise 5), the theoretical prediction (exercise 6), and the estimate of the theoretical prediction (exercise 7) are. The theory is working and it gives us a practical approach to knowing the typical error we will make if we predict $p$ with $X$. Another advantage that the theoretical result provides is that it gives an idea of how large a sample size is required to obtain the precision we need. Earlier we learned that the largest standard errors occur for $p = 0.5$. Create a plot of the largest standard error for $N$ ranging from 100 to 5,000. Based on this plot, how large does the sample size have to be to have a standard error of about 1%?
+```{r}
+library(ggplot2)
+library(tidyverse)
+```
+
+_1.using sd()_
+```{r}
+take_sd <- function(N){
+  x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
+  sd(x)
+}
+
+p <- 0.5
+N <- 100:5000
+gre <- sapply(N, take_sd)
+gre. <- data.frame(N = N, Y = gre)
+gre. %>% ggplot(aes(x = N, y = Y)) + geom_line()
+```
+(weird....weird..)
+
+
+_2.using p_
+```{r}
+take_sample_2 <- function(N){
+  x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
+  mean(x)
+}
+p <- 0.5
+N <- 100:5000
+grt <- sapply(N, take_sample_2)
+data.grt <- data.frame(N = N, Y = sqrt(p*(1-p)/N))
+ggplot(data.grt) + geom_line(aes(x = N, y = Y))
+
+```
+
+_3.using X_hat_
+```{r}
+grr <- sapply(N, take_sample_2)
+data.grr <- data.frame(N = N, Y = sqrt(grr*(1-grr)/N))
+ggplot(data.grr) + geom_line(aes(x = N, y = Y))
+```
 
 a. 100
 b. 500
-c. 2,500
+**c**. 2,500
 d. 4,000
 
+**c**
+
+(X_hat과 p를 사용했을 때 매우 비슷하게 플롯. sd()는 이상함..)
 
 
 9. For sample size $N = 100$, the central limit theorem tells us that the distribution of $X$ is:
 
 a. practically equal to $p$.
-b. approximately normal with expected value $p$ and standard error $√p(1−p)/N$.
+**b**. approximately normal with expected value $p$ and standard error $√p(1−p)/N$.
 c. approximately normal with expected value $X$ and standard error $√X(1−X)/N$.
 d. not a random variable.
 
@@ -399,17 +577,50 @@ b. approximately normal with expected value $0$ and standard error $√p(1−p)/
 c. approximately normal with expected value $p$ and standard error $√p(1−p)/N$.
 d. not a random variable.
 
+(exercise 3이 아니고..?)
+
 
 
 11. To corroborate your answer to exercise 9, make a qq-plot of the `errors` you generated in exercise 2 to see if they follow a normal distribution.
+
+(check if the data follows specific distribution..)
+
+```{r}
+qqnorm(errors)
+qqline(errors)
+```
+
 
 
 
 12. If $p = 0.45$ and $N = 100$ as in exercise 2, use the CLT to estimate the probability that $X > 0.5$. You can assume you know $p = 0.45$ for this calculation.
 
+```{r}
+p <- 0.45
+N <- 100
+m <- p
+sd <- sqrt(p*(1-p)/N)
+1-pnorm(0.5, m, sd)
+```
+
+**0.1574393**
+
 
 
 13. Assume you are in a practical situation and you don’t know $p$. Take a sample of size $N = 100$ and obtain a sample average of $X = 0.51$. What is the CLT approximation for the probability that your error is equal to or larger than 0.01?
+
+error = |X' - p| 인가?
+Pr(X >= p + 0.01)
+Pr(X <= p - 0.01)
+
+```{r}
+N <- 100
+X_hat <- 0.51
+SE <- sqrt(X_hat*(1-X_hat)/N)
+pnorm(-0.01/SE) + 1 - pnorm(0.01/SE)
+```
+
+**0.8414493**
 
 
 
