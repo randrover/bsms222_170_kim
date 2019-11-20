@@ -632,11 +632,14 @@ Confidence intervals are a very useful concept widely employed by data analysts.
 
 In the Machine Learning part we will learn how the curve is formed, but for now consider the shaded area around the curve. This is created using the concept of confidence intervals.
 
-In our earlier competition, you were asked to give an interval. If the interval you submitted includes the $p$, you get half the money you spent on your “poll” back and pass to the next stage of the competition. One way to pass to the second round is to report a very large interval. For example, the interval $[0,1]$ is guaranteed to include $p$. However, with an interval this big, we have no chance of winning the competition. Similarly, if you are an election forecaster and predict the spread will be between -100% and 100%, you will be ridiculed for stating the obvious. Even a smaller interval, such as saying the spread will be between -10 and 10%, will not be considered serious.
+In our earlier competition, you were asked to give an interval. If the interval you submitted includes the $p$, you get half the money you spent on your “poll” back and pass to the next stage of the competition. One way to pass to the second round is to report a very large interval. For example, the interval $[0,1]$ is guaranteed to include $p$.
+
+However, with an interval this big, we have no chance of winning the competition. Similarly, if you are an election forecaster and predict the spread will be between -100% and 100%, you will be ridiculed for stating the obvious. Even a smaller interval, such as saying the spread will be between -10 and 10%, will not be considered serious.
 
 On the other hand, the smaller the interval we report, the smaller our chances are of winning the prize. Likewise, a bold pollster that reports very small intervals and misses the mark most of the time will not be considered a good pollster. We want to be somewhere in between.
 
 We can use the statistical theory we have learned to compute the probability of any given interval including $p$. If we are asked to create an interval with, say, a 95% chance of including $p$, we can do that as well. These are called 95% confidence intervals.
+(95% 확률로 p를 포함하는 범위)
 
 When a pollster reports an estimate and a margin of error, they are, in a way, reporting a 95% confidence interval. Let’s show how this works mathematically.
 
@@ -673,6 +676,8 @@ To determine the probability that the interval includes $p$, we need to compute 
 
 $Pr(X - 1.96SE(X) ≤ p ≤ X + 1.96SE(X))$
 
+(이 범위 안에 p가 있을 확률은 95%.)
+
 By subtracting and dividing the same quantities in all parts of the equation, we get that the above is equivalent to:
 
 $Pr(-1.96 ≤ (X-p)/(SE(X)) ≤ 1.96 )$
@@ -694,6 +699,8 @@ If we want to have a larger probability, say 99%, we need to multiply by whateve
 
 $Pr(-z ≤ Z ≤ z) = 0.99$
 
+(이 z는 SE(X)에 곱할 숫자 아님?)
+
 Using:
 
 ```{r}
@@ -702,14 +709,22 @@ z
 #> [1] 2.58
 ```
 
+( Pr(X<=z) = 0.995 & Pr(X<=-z) = 0.005 )
+
 will achieve this because by definition `pnorm(qnorm(0.995))` is 0.995 and by symmetry `pnorm(1-qnorm(0.995))` is 1 - 0.995. As a consequence, we have that:
+(??? 그냥 pnorm(-qnorm(0.995)) 아닌가?)
 
 ```{r}
+pnorm(1-qnorm(0.995))
+pnorm(-qnorm(0.995))
+
 pnorm(z) - pnorm(-z)
 #> [1] 0.99
 ```
 
-is `0.995 - 0.005 = 0.99`. We can use this approach for any proportion $p$: we set `z = qnorm(1 - (1 - p)/2)` because $1−(1−p)/2+(1−p)/2=p$.
+is `0.995 - 0.005 = 0.99`. We can use this approach for any proportion $p$: we set `z = qnorm(1 - (1 - p)/2)` because $1−(1−p)/2+(1−p)/2=p$.?? 1-(1-p)/2-(1-p)/2 = p라는 뜻이었을까?
+
+z = qnorm(1 - (1 - p)/2). 즉 p라는 확률이 있고. 그걸 1-p한 값이 있고. 이걸 2개로 나누어 양쪽 끝에 분배할 것이므로 왼쪽 끝은 qnorm((1-p)/2)=-z 가 되고. 오른쪽 끝은 qnorm(1-(1-p)/2)=z 가 된다.
 
 So, for example, for $p=0.95$, $1−(1−p)/2=0.975$ and we get the 1.96 we have been using:
 
@@ -736,6 +751,7 @@ inside <- replicate(B, {
 mean(inside)
 #> [1] 0.948
 ```
+(실제로 해보니 그렇더라..)
 
 The following plot shows the first 100 confidence intervals. In this case, we created the simulation so the black line denotes the parameter we are trying to estimate:
 
@@ -746,6 +762,9 @@ The following plot shows the first 100 confidence intervals. In this case, we cr
 ### 15.6.2 The correct language
 
 When using the theory we described above, it is important to remember that it is the intervals that are random, not $p$. In the plot above, we can see the random intervals moving around and $p$, represented with the vertical line, staying in the same place. The proportion of blue in the urn $p$ is not. So the 95% relates to the probability that this random interval falls on top of $p$. Saying the $p$ has a 95% chance of being between this and that is technically an incorrect statement because $p$ is not random.
+
+(여기서 p는 샘플의 비율 아니고 urn의 비율 아니냐구..)
+(p가 범위에 들어갈 확률이 95%가 아니고, 범위 안에 p가 있을 확률이 95%.. 음 맞나?)
 
 
 
@@ -769,27 +788,78 @@ polls <- polls_us_election_2016 %>%
 1. For the first poll, you can obtain the samples size and estimated Clinton percentage with:
 
 ```{r}
+#the first sample
 N <- polls$samplesize[1]
 x_hat <- polls$rawpoll_clinton[1]/100
 ```
 
 Assume there are only two candidates and construct a 95% confidence interval for the election night proportion $p$.
 
+```{r}
+se_hat <- sqrt(x_hat * (1 - x_hat) / N)
+c(x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat)
+```
+
+**[0.4492381, 0.4907619]**
 
 
 2. Now use `dplyr` to add a confidence interval as two columns, call them `lower` and `upper`, to the object `poll`. Then use `select` to show the `pollster`, `enddate`, `x_hat`, `lower`, `upper` variables. Hint: define temporary columns `x_hat` and `se_hat`.
+(poll? polls? new object poll..?)
+
+```{r}
+library(dplyr)
+
+N <- polls$samplesize
+x_hat <- polls$rawpoll_clinton/100
+se_hat <- sqrt(x_hat * (1 - x_hat) / N)
+lower <- x_hat - 1.96 * se_hat
+upper <- x_hat + 1.96 * se_hat
+
+
+polls <- polls %>% mutate(lower = lower, upper = upper, x_hat = x_hat) %>% select(pollster, enddate, x_hat, lower, upper)
+polls
+```
+
 
 
 
 3. The final tally for the popular vote was Clinton 48.2% and Trump 46.1%. Add a column, call it `hit`, to the previous table stating if the confidence interval included the true proportion $p=0.482$ or not.
 
+```{r}
+p <- 0.482
+
+#return "Succeed" if the random interval falls on top of p
+ahem <- function(i){
+  T <- between(p, lower[i], upper[i])
+  ifelse(T == "TRUE", "Succeed", "Fail")
+}
+
+hit <- sapply(1:length(lower), ahem)
+
+polls <-polls %>% mutate(hit = hit)
+polls
+```
+
+
 
 
 4. For the table you just created, what proportion of confidence intervals included $p$?
 
+```{r}
+mean(polls$hit == "Succeed")
+```
+
+**0.3142857**
 
 
 5. If these confidence intervals are constructed correctly, and the theory holds up, what proportion should include $p$?
+
+```{r}
+z <- qnorm(1- (1-p)/2)
+pnorm(z) - pnorm(-z)
+```
+
+**0.482**
 
 
 
@@ -801,21 +871,84 @@ polls <- polls_us_election_2016 %>%
   mutate(d_hat = rawpoll_clinton / 100 - rawpoll_trump / 100)
 ```
 
+```{r}
+N <- polls$samplesize
+d_hat <- polls$d_hat
+se_hat <- sqrt(d_hat * (1 - d_hat) / N)
+c(d_hat - 1.96 * se_hat, d_hat + 1.96 * se_hat)
+```
+?
 
 
 7. Now repeat exercise 3, but for the difference.
+
+```{r}
+d <- 0.021
+lower <- d_hat - 1.96 * se_hat
+upper <- d_hat + 1.96 * se_hat
+
+#return "Succeed" if the random interval falls on top of d
+dhem <- function(i){
+  T <- between(p, lower[i], upper[i])
+  ifelse(T == "TRUE", "Succeed", "Fail")
+}
+
+hit <- sapply(1:length(lower), dhem)
+
+polls <-polls %>% mutate(hit = hit, lower = lower, upper = upper, d_hat = d_hat)
+polls %>% select(pollster, enddate, d_hat, lower, upper, hit)
+```
+
 
 
 
 8. Now repeat exercise 4, but for the difference.
 
+```{r}
+mean(polls$hit == "Succeed")
+```
+
+**NA**...
+
 
 
 9. Although the proportion of confidence intervals goes up substantially, it is still lower than 0.95. In the next chapter, we learn the reason for this. To motivate this, make a plot of the error, the difference between each poll’s estimate and the actual $d = 0.021$. Stratify by pollster.
 
+```{r, fig.width = 8, fig.height = 6}
+library(ggplot2)
+#polls %>% ggplot(aes(x = pollster, y = abs(d_hat-0.021))) + geom_col()
+
+c <- polls %>% select(pollster, d_hat) %>% mutate(error = abs(d_hat - 0.021)) %>% select(pollster, error) %>% group_by(pollster)
+
+#어떻게 pollster끼리 error 평균내지..?
+
+index <- c %>% count()
+
+kuku <- function(i){
+  x <- which(c$pollster %in% index$pollster[i])
+  mean(c$error[x])
+}
+
+ququ <- sapply(1:nrow(index), kuku)
+qrr <- data.frame(pollster = index$pollster, count = index$n, mean_error = ququ)
+
+qrr %>% mutate(pollster = reorder(pollster, mean_error)) %>% ggplot(aes(x = pollster, y = mean_error)) + geom_col() + coord_flip() +
+  scale_x_discrete(labels = c("Google Consumer Surveys", "Morning Consult", "Selzer & Company", "Gravis Marketing", "Marist College", "RKM Research and Communications, Inc.", "Fox News/Anderson Robbins Research/
+                              Shaw & Company Research", "CVOTER International", "CBS News/New York Times", "YouGov", "ABC News/Washington Post", "Angus Reid Global", "Insights West", "NBC News/Wall Street Journal", "Rasmussen Reports/Pulse Opinion Research", "The Times-Picayune/Lucid", "IBD/TIPP", "Ipsos", "Monmouth University", "SurveyMonkey", "USC Dornsife/LA Times", "RAND (American Life Panel)"))
+```
+
+
 
 
 10. Redo the plot that you made for exercise 9, but only for pollsters that took five or more polls.
+
+```{r}
+qrr %>% filter(count>=5) %>% mutate(pollster = reorder(pollster, mean_error)) %>% ggplot(aes(x = pollster, y = mean_error)) + geom_col() + coord_flip() +
+  scale_x_discrete(labels = c("CVOTER International", "ABC News/Washington Post", "Rasmussen Reports/
+Pulse Opinion Research", "The Times-Picayune/Lucid", "IBD/TIPP", "Ipsos", "USC Dornsife/LA Times"))
+
+```
+
 
 
 
