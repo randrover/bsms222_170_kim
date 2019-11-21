@@ -979,15 +979,19 @@ p-values are ubiquitous in the scientific literature. They are related to confid
 
 Let’s consider the blue and red beads. Suppose that rather than wanting an estimate of the spread or the proportion of blue, I am interested only in the question: are there more blue beads or red beads? I want to know if the spread $2p-1 > 0$.
 
-Say we take a random sample of $N=100$ and we observe $52$ blue beads, which gives us $2X - 1 = 0.04$. This seems to be pointing to the existence of more blue than red beads since 0.04 is larger than 0. However, as data scientists we need to be skeptical. We know there is chance involved in this process and we could get a 52 even when the actual spread is 0. We call the assumption that the spread is $2p-1= 0$ a _null hypothesis_. The null hypothesis is the skeptic’s hypothesis. We have observed a random variable $2*X - 1 = 0.04$ and the p-value is the answer to the question: how likely is it to see a value this large, when the null hypothesis is true? So we write:
+Say we take a random sample of $N=100$ and we observe $52$ blue beads, which gives us $2X' - 1 = 0.04$. This seems to be pointing to the existence of more blue than red beads since 0.04 is larger than 0. However, as data scientists we need to be skeptical. We know there is chance involved in this process and we could get a 52 even when the actual spread is 0. We call the assumption that the spread is $2p-1= 0$ a _null hypothesis_. The null hypothesis is the skeptic’s hypothesis. We have observed a random variable $2*X' - 1 = 0.04$ and the p-value is the answer to the question: how likely is it to see a value this large, when the null hypothesis is true? So we write:
 
-$Pr(∣X−0.5∣>0.02)
+$Pr(∣X−0.5∣>0.02)$
 
 assuming the $2p−1=0$ or $p=0.5$. Under the null hypothesis we know that:
 
 $√N(X−0.5)/(√0.5(1−0.5))$
 
+(Z구나.)
+
 is standard normal. We therefore can compute the probability above, which is the p-value.
+
+(즉 p=0.5일 때 Z값?)
 
 $Pr(√N|X−0.5|/(√0.5(1−0.5)) > √N(0.02)/(√0.5(1−0.5)))$
 
@@ -997,6 +1001,9 @@ z <- sqrt(N)*0.02/0.5
 1 - (pnorm(z) - pnorm(-z))
 #> [1] 0.689
 ```
+1 - pr(Z < z) + pr ( Z < -z)
+1 - (pr( Z < z) - pr(Z < -z))
+인가..
 
 In this case, there is actually a large chance of seeing 52 or larger under the null hypothesis.
 
@@ -1151,6 +1158,7 @@ and can be computed like this:
 odds_men <- with(two_by_two, (men[2]/sum(men)) / (men[1]/sum(men)))
 odds_men
 ```
+(290/1635)/(1345/1635)
 
 And the odds of being funded if you are a woman is:
 
@@ -1171,7 +1179,9 @@ odds_men / odds_women
 
 We often see two-by-two tables written out as
 
-()
+____________Men___Women
+Awarded______a______b
+Not Awarded__c______d
 
 In this case, the odds ratio is $(a/c)/(b/d)$ which is equivalent to $(ad)/(bc)$
 
@@ -1199,6 +1209,8 @@ se <- two_by_two %>% select(-awarded) %>%
   summarize(se = sqrt(sum(1/men) + sum(1/women))) %>%
   pull(se)
 ci <- log_or + c(-1,1) * qnorm(0.975) * se
+#sum(1/men) ~> 1/a + 1/c
+#qnorm(0.975) = 1.96
 ```
 
 If we want to convert it back to the odds ratio scale, we can exponentiate:
@@ -1241,18 +1253,62 @@ two_by_two %>% select(-awarded) %>%
 
 1. A famous athlete has an impressive career, winning 70% of her 500 career matches. However, this athlete gets criticized because in important events, such as the Olympics, she has a losing record of 8 wins and 9 losses. Perform a Chi-square test to determine if this losing record can be simply due to chance as opposed to not performing well under pressure.
 
+```{r}
+two_by_two <- data.frame(results = c("win", "lose"), 
+                     N_Olympics = c(500*0.7-8, 500*0.3-9),
+                     Olympics = c(8, 9))
+two_by_two
+```
+
+```{r}
+chisq_test <- two_by_two %>% select(-results) %>% chisq.test()
+```
+
+```{r}
+chisq_test$p.value
+```
+
 
 
 2. Why did we use the Chi-square test instead of Fisher’s exact test in the previous exercise?
 
 a. It actually does not matter, since they give the exact same p-value.
 b. Fisher’s exact and the Chi-square are different names for the same test.
-c. Because the sum of the rows and columns of the two-by-two table are not fixed so the hypergeometric distribution is not an appropriate assumption for the null hypothesis. For this reason, Fisher’s exact test is rarely applicable with observational data.
+**c**. Because the sum of the rows and columns of the two-by-two table are not fixed so the hypergeometric distribution is not an appropriate assumption for the null hypothesis. For this reason, Fisher’s exact test is rarely applicable with observational data.
 d. Because the Chi-square test runs faster.
 
+**c**
 
 
 3. Compute the odds ratio of “losing under pressure” along with a confidence interval.
+
+```{r}
+odds_Olympics <- with(two_by_two, (Olympics[2]/sum(Olympics)) / (Olympics[1]/sum(Olympics)))
+odds_Olympics
+
+odds_N_Olympics <- with(two_by_two, (N_Olympics[2]/sum(N_Olympics)) / (N_Olympics[1]/sum(N_Olympics)))
+odds_N_Olympics
+
+odds_Olympics / odds_N_Olympics
+```
+
+음..
+
+```{r}
+log_or <- log(odds_Olympics / odds_N_Olympics)
+se <- two_by_two %>% select(-results) %>%
+  summarize(se = sqrt(sum(1/Olympics) + sum(1/N_Olympics))) %>%
+  pull(se)
+c_i <- log_or + c(-1,1) * qnorm(0.975) * se
+c_i
+exp(c_i)
+```
+
+음....?
+
+```{r}
+2*(1 - pnorm(log_or, 0, se))
+```
 
 
 
@@ -1260,13 +1316,28 @@ d. Because the Chi-square test runs faster.
 
 a. We made a mistake in our code.
 b. These are not t-tests so the connection between p-value and confidence intervals does not apply.
-c. Different approximations are used for the p-value and the confidence interval calculation. If we had a larger sample size the match would be better.
+**c**. Different approximations are used for the p-value and the confidence interval calculation. If we had a larger sample size the match would be better.
 d. We should use the Fisher exact test to get confidence intervals.
 
 
 
 5. Multiply the two-by-two table by 2 and see if the p-value and confidence retrieval are a better match.
 
+```{r}
+two_by_two %>% select(-results) %>%
+  mutate(Olympics = Olympics*10, N_Olympics = N_Olympics*10) %>%
+  chisq.test() %>% .$p.value
+
+se_2 <- two_by_two %>% select(-results) %>%
+  mutate(Olympics = Olympics*10, N_Olympics = N_Olympics*10) %>%
+  summarize(se = sqrt(sum(1/Olympics) + sum(1/N_Olympics))) %>%
+  pull(se)
+
+c_i_2 <- log_or + c(-1,1) * qnorm(0.975) * se_2
+exp(c_i_2)
+```
+
+It looks great!
 
 
 
