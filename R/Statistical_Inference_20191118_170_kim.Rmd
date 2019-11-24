@@ -1273,9 +1273,12 @@ chisq_test$p.value
 2. Why did we use the Chi-square test instead of Fisher’s exact test in the previous exercise?
 
 a. It actually does not matter, since they give the exact same p-value.
+
 b. Fisher’s exact and the Chi-square are different names for the same test.
+
 **c**. Because the sum of the rows and columns of the two-by-two table are not fixed so the hypergeometric distribution is not an appropriate assumption for the null hypothesis. For this reason, Fisher’s exact test is rarely applicable with observational data.
-d. Because the Chi-square test runs faster.
+
+dd. Because the Chi-square test runs faster.
 
 
 
