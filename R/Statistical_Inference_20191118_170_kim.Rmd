@@ -874,10 +874,11 @@ polls <- polls_us_election_2016 %>%
 ```{r}
 N <- polls$samplesize
 d_hat <- polls$d_hat
-se_hat <- sqrt(d_hat * (1 - d_hat) / N)
+x_hat <- polls$rawpoll_clinton/100
+se_hat <- 2*sqrt((x_hat) * (1 - x_hat) / N)
 c(d_hat - 1.96 * se_hat, d_hat + 1.96 * se_hat)
 ```
-?
+
 
 
 7. Now repeat exercise 3, but for the difference.
@@ -889,13 +890,13 @@ upper <- d_hat + 1.96 * se_hat
 
 #return "Succeed" if the random interval falls on top of d
 dhem <- function(i){
-  T <- between(p, lower[i], upper[i])
+  T <- between(d, lower[i], upper[i])
   ifelse(T == "TRUE", "Succeed", "Fail")
 }
 
-hit <- sapply(1:length(lower), dhem)
+hit_ <- sapply(1:length(lower), dhem)
 
-polls <-polls %>% mutate(hit = hit, lower = lower, upper = upper, d_hat = d_hat)
+polls <-polls %>% mutate(hit = hit_, lower = lower, upper = upper, d_hat = d_hat)
 polls %>% select(pollster, enddate, d_hat, lower, upper, hit)
 ```
 
@@ -908,7 +909,7 @@ polls %>% select(pollster, enddate, d_hat, lower, upper, hit)
 mean(polls$hit == "Succeed")
 ```
 
-**NA**...
+**0.7714286**...
 
 
 
@@ -920,7 +921,7 @@ library(ggplot2)
 
 c <- polls %>% select(pollster, d_hat) %>% mutate(error = abs(d_hat - 0.021)) %>% select(pollster, error) %>% group_by(pollster)
 
-#어떻게 pollster끼리 error 평균내지..?
+#pollster끼리 절대값 error 평균
 
 index <- c %>% count()
 
@@ -937,6 +938,28 @@ qrr %>% mutate(pollster = reorder(pollster, mean_error)) %>% ggplot(aes(x = poll
                               Shaw & Company Research", "CVOTER International", "CBS News/New York Times", "YouGov", "ABC News/Washington Post", "Angus Reid Global", "Insights West", "NBC News/Wall Street Journal", "Rasmussen Reports/Pulse Opinion Research", "The Times-Picayune/Lucid", "IBD/TIPP", "Ipsos", "Monmouth University", "SurveyMonkey", "USC Dornsife/LA Times", "RAND (American Life Panel)"))
 ```
 
+```{r, fig.width = 8, fig.height = 6}
+polls %>% mutate(error = d_hat - 0.021) %>% ggplot(aes(x = pollster, y = error)) + geom_point()+ coord_flip()
+
+c_ <- polls %>% select(pollster, d_hat) %>% mutate(error = d_hat - 0.021) %>% select(pollster, error) %>% group_by(pollster)
+
+#pollster끼리 error 평균
+
+index_ <- c_ %>% count()
+
+kuku_ <- function(i){
+  x <- which(c_$pollster %in% index_$pollster[i])
+  mean(c_$error[x])
+}
+
+ququ_ <- sapply(1:nrow(index_), kuku_)
+qrr_ <- data.frame(pollster = index_$pollster, count = index_$n, mean_error = ququ_)
+
+qrr_ %>% mutate(pollster = reorder(pollster, mean_error)) %>% ggplot(aes(x = pollster, y = mean_error)) + geom_col() + coord_flip()
+
+```
+
+
 
 
 
@@ -948,6 +971,13 @@ qrr %>% filter(count>=5) %>% mutate(pollster = reorder(pollster, mean_error)) %>
 Pulse Opinion Research", "The Times-Picayune/Lucid", "IBD/TIPP", "Ipsos", "USC Dornsife/LA Times"))
 
 ```
+
+
+
+```{r}
+qrr_ %>% filter(count>=5) %>% mutate(pollster = reorder(pollster, mean_error)) %>% ggplot(aes(x = pollster, y = mean_error)) + geom_col() + coord_flip()
+```
+
 
 
 
