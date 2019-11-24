@@ -1319,6 +1319,7 @@ dd. Because the Chi-square test runs faster.
 
 3. Compute the odds ratio of “losing under pressure” along with a confidence interval.
 
+
 ```{r}
 odds_Olympics <- with(two_by_two, (Olympics[2]/sum(Olympics)) / (Olympics[1]/sum(Olympics)))
 odds_Olympics
@@ -1326,10 +1327,12 @@ odds_Olympics
 odds_N_Olympics <- with(two_by_two, (N_Olympics[2]/sum(N_Olympics)) / (N_Olympics[1]/sum(N_Olympics)))
 odds_N_Olympics
 
+#the odds ratio of losing under pressure
 odds_Olympics / odds_N_Olympics
 ```
+**2.728723**
 
-음..
+
 
 ```{r}
 log_or <- log(odds_Olympics / odds_N_Olympics)
@@ -1340,12 +1343,16 @@ c_i <- log_or + c(-1,1) * qnorm(0.975) * se
 c_i
 exp(c_i)
 ```
+1 is not included. (1.00부터도 아닌 듯. (a,b)같은 ? < <)
 
-음....?
 
 ```{r}
 2*(1 - pnorm(log_or, 0, se))
 ```
+
+Q3 means p-vaule is smaller than 0.05, but Q1 shows that the p-value is larger than 0.05.
+
+Q3~> This is a slightly different p-value than that with the Chi-square test. This is because we are using a different asymptotic approximation to the null distribution.
 
 
 
@@ -1359,6 +1366,7 @@ b. These are not t-tests so the connection between p-value and confidence interv
 
 dd. We should use the Fisher exact test to get confidence intervals.
 
+
 **c**
 
 
@@ -1366,18 +1374,36 @@ dd. We should use the Fisher exact test to get confidence intervals.
 5. Multiply the two-by-two table by 2 and see if the p-value and confidence retrieval are a better match.
 
 ```{r}
-two_by_two %>% select(-results) %>%
-  mutate(Olympics = Olympics*10, N_Olympics = N_Olympics*10) %>%
-  chisq.test() %>% .$p.value
+two_by_two_2 <- two_by_two %>%
+  mutate(Olympics = Olympics*2, N_Olympics = N_Olympics*2) 
 
-se_2 <- two_by_two %>% select(-results) %>%
-  mutate(Olympics = Olympics*10, N_Olympics = N_Olympics*10) %>%
+two_by_two_2 %>% select(-results) %>%
+  chisq.test() %>% .$p.value
+```
+
+```{r}
+odds_Olympics <- with(two_by_two_2, (Olympics[2]/sum(Olympics)) / (Olympics[1]/sum(Olympics)))
+
+odds_N_Olympics <- with(two_by_two_2, (N_Olympics[2]/sum(N_Olympics)) / (N_Olympics[1]/sum(N_Olympics)))
+
+#the odds ratio of losing under pressure
+odds_Olympics / odds_N_Olympics
+
+log_or <- log(odds_Olympics / odds_N_Olympics)
+
+se_2 <- two_by_two_2 %>%
+  select(-results) %>%
   summarize(se = sqrt(sum(1/Olympics) + sum(1/N_Olympics))) %>%
   pull(se)
 
 c_i_2 <- log_or + c(-1,1) * qnorm(0.975) * se_2
 exp(c_i_2)
+2*(1 - pnorm(log_or, 0, se_2))
 ```
+
+**0.00544228** & **0.004216133**
+
+
 
 It looks great!
 
