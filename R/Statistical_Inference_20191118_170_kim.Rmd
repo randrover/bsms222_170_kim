@@ -1277,7 +1277,11 @@ b. Fisher’s exact and the Chi-square are different names for the same test.
 **c**. Because the sum of the rows and columns of the two-by-two table are not fixed so the hypergeometric distribution is not an appropriate assumption for the null hypothesis. For this reason, Fisher’s exact test is rarely applicable with observational data.
 d. Because the Chi-square test runs faster.
 
+
+
 **c**
+
+
 
 
 3. Compute the odds ratio of “losing under pressure” along with a confidence interval.
