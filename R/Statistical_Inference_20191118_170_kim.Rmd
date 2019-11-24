@@ -855,11 +855,11 @@ mean(polls$hit == "Succeed")
 5. If these confidence intervals are constructed correctly, and the theory holds up, what proportion should include $p$?
 
 ```{r}
-z <- qnorm(1- (1-p)/2)
-pnorm(z) - pnorm(-z)
+#To determine the probability that the interval includes p
+pnorm(1.96) - pnorm(-1.96)
 ```
 
-**0.482**
+**0.9500042**
 
 
 
