@@ -531,7 +531,6 @@ create %>% group_by(pollster) %>% summarize(se)
 
 
 
-
 ## 16.4 Bayesian statistics
 
 What does it mean when an election forecaster tells us that a given candidate has a 90% chance of winning? In the context of the urn model, this would be equivalent to stating that the probability $p>0.5$ is 90%. However, as we discussed earlier, in the urn model $p$ is a fixed parameter and it does not make sense to talk about probability. With Bayesian statistics, we model $p$ as random variable and thus a statement such as “90% chance of winning” is consistent with the approach.
@@ -704,16 +703,32 @@ Although both intervals included the final batting average, the Bayesian credibl
 
 1. In 1999, in England, Sally Clark was found guilty of the murder of two of her sons. Both infants were found dead in the morning, one in 1996 and another in 1998. In both cases, she claimed the cause of death was sudden infant death syndrome (SIDS). No evidence of physical harm was found on the two infants so the main piece of evidence against her was the testimony of Professor Sir Roy Meadow, who testified that the chances of two infants dying of SIDS was 1 in 73 million. He arrived at this figure by finding that the rate of SIDS was 1 in 8,500 and then calculating that the chance of two SIDS cases was 8,500$×$8,500$≈$73 million. Which of the following do you agree with?
 
-a. Sir Meadow assumed that the probability of the second son being affected by SIDS was independent of the first son being affected, thereby ignoring possible genetic causes. If genetics plays a role then: $Pr(second case of SIDS∣first case of SIDS)<Pr(first case of SIDS)$.
+**a**. Sir Meadow assumed that the probability of the second son being affected by SIDS was independent of the first son being affected, thereby ignoring possible genetic causes. If genetics plays a role then: $Pr(second case of SIDS∣first case of SIDS)<Pr(first case of SIDS)$.
 b. Nothing. The multiplication rule always applies in this way: $Pr(A and B)=Pr(A)Pr(B)$
 c. Sir Meadow is an expert and we should trust his calculations.
 d. Numbers don’t lie.
 
 
+**a**
+
+
 2. Let’s assume that there is in fact a genetic component to SIDS and the probability of $Pr(second case of SIDS∣first case of SIDS)=1/100$, is much higher than 1 in 8,500. What is the probability of both of her sons dying of SIDS?
+
+```{r}
+(1/8500) * (1/100)
+```
+
+**1.176471e-06**
 
 
 3. Many press reports stated that the expert claimed the probability of Sally Clark being innocent as 1 in 73 million. Perhaps the jury and judge also interpreted the testimony this way. This probability can be written as the probability of a _mother is a son-murdering psychopath_ given that _two of her children are found dead with no evidence of physical harm_. According to Bayes’ rule, what is this?
+
+```
+A <- _mother is a son-murdering psychopath_
+B <- _two of her children are found dead with no evidence of physical harm_
+$Pr(A|B)$
+$=Pr(B∣A)Pr(A)/Pr(B)$
+```
 
 
 4. Assume that the chance of a son-murdering psychopath finding a way to kill her children, without leaving evidence of physical harm, is:
@@ -722,13 +737,46 @@ $Pr(A∣B)=0.50$
 
 with A = two of her children are found dead with no evidence of physical harm and B = a mother is a son-murdering psychopath = 0.50. Assume that the rate of son-murdering psychopaths mothers is 1 in 1,000,000. According to Bayes’ theorem, what is the probability of $Pr(B∣A)$?
 
+```
+Pr(B) = 1/1000000
+Pr(A|B) = 0.50
+Pr(B|A) = Pr(A|B)*Pr(B)/Pr(A)
+```
+
+```{r}
+Pr_B <- 1/1000000
+Pr_notB <- 1-Pr_B
+# Pr(A|notB) 가 SIDS 인가...?
+Pr_AnotB <- (1/8500) * (1/100)
+Pr_AB <- 0.50
+Pr_BA <- Pr_AB*Pr_B/ (Pr_AB*Pr_B + Pr_AnotB*Pr_notB )
+Pr_BA
+```
+
+**0.2982458**
+
+```{r}
+Pr_B <- 1/1000000
+Pr_AB <- 0.50
+Pr_A <-(1/8500) * (1/100)
+Pr_BA <- Pr_AB*Pr_B/Pr_A
+Pr_BA
+```
+
+**0.425**
+
+which..?
+
 
 5. After Sally Clark was found guilty, the Royal Statistical Society issued a statement saying that there was “no statistical basis” for the expert’s claim. They expressed concern at the “misuse of statistics in the courts”. Eventually, Sally Clark was acquitted in June 2003. What did the expert miss?
 
 a. He made an arithmetic error.
-b. He made two mistakes. First, he misused the multiplication rule and did not take into account how rare it is for a mother to murder her children. After using Bayes’ rule, we found a probability closer to 0.5 than 1 in 73 million.
+**b**. He made two mistakes. First, he misused the multiplication rule and did not take into account how rare it is for a mother to murder her children. After using Bayes’ rule, we found a probability closer to 0.5 than 1 in 73 million.
 c. He mixed up the numerator and denominator of Bayes’ rule.
 d. He did not use R.
+
+
+**b**
 
 
 6. Florida is one of the most closely watched states in the U.S. election because it has many electoral votes, and the election is generally close, and Florida tends to be a swing state that can vote either way. Create the following table with the polls taken during the last two weeks:
@@ -744,29 +792,108 @@ polls <- polls_us_election_2016 %>%
 
 Take the average spread of these polls. The CLT tells us this average is approximately normal. Calculate an average and provide an estimate of the standard error. Save your results in an object called `results`.
 
+```{r}
+d_hat <- polls %>% 
+  summarize(d_hat = sum(spread * samplesize) / sum(samplesize)) %>% 
+  pull(d_hat)
+
+p_hat <- (d_hat+1)/2 
+moe <- 1.96 * 2 * sqrt(p_hat * (1 - p_hat) / sum(polls$samplesize))
+
+results <- c(d_hat, moe)
+results
+```
+```{r}
+results <- polls %>% 
+  summarize(avg = mean(spread), se = sd(spread)/sqrt(length(spread))) %>% 
+  mutate(start = avg - 1.96*se, end = avg + 1.96*se) 
+results
+```
+
+
 
 7. Now assume a Bayesian model that sets the prior distribution for Florida’s election night spread $d$ to be Normal with expected value $μ$ and standard deviation $τ$. What are the interpretations of $μ$ and $τ$?
 
 a. $μ$ and $τ$ are arbitrary numbers that let us make probability statements about $d$.
-b. $μ$ and $τ$ summarize what we would predict for Florida before seeing any polls. Based on past elections, we would set $μ$ close to 0 because both Republicans and Democrats have won, and $τ$ at about $0.02$, because these elections tend to be close.
+**b**. $μ$ and $τ$ summarize what we would predict for Florida before seeing any polls. Based on past elections, we would set $μ$ close to 0 because both Republicans and Democrats have won, and $τ$ at about $0.02$, because these elections tend to be close.
 c. $μ$ and $τ$ summarize what we want to be true. We therefore set $μ$ at $0.10$ and $τ$ at $0.01$.
 d. The choice of prior has no effect on Bayesian analysis.
 
 
+**b**
+
+
 8. The CLT tells us that our estimate of the spread $d’$ has normal distribution with expected value $d$ and standard deviation $σ$ calculated in problem 6. Use the formulas we showed for the posterior distribution to calculate the expected value of the posterior distribution if we set $μ=0$ and $τ=0.01$.
+
+```
+p ~ N(0, 0.01^2)
+Y|p ~ N( p, 0.005217071^2)
+```
+
+```{r}
+B <- 0.005217071^2/(0.005217071^2 + 0.01^2)
+Pr_pY <- B*0 + (1-B)*0.01895102
+0 + (1-B)*(0.01895102 - 0)
+```
+
+
+**0.01489651**
 
 
 9. Now compute the standard deviation of the posterior distribution.
 
+```{r}
+SE_pY <- 1/(1/0.005217071^2 + 1/0.01^2)
+SE_pY
+```
+
+**2.139467e-05**
+
 
 10. Using the fact that the posterior distribution is normal, create an interval that has a 95% probability of occurring centered at the posterior expected value. Note that we call these credible intervals.
+
+```{r}
+c(Pr_pY - 1.96*SE_pY, Pr_pY + 1.96*SE_pY)
+```
+
+**0.01485458 0.01493845**
 
 
 11. According to this analysis, what was the probability that Trump wins Florida?
 
+```{r}
+1 - pnorm(0, Pr_pY, SE_pY)
+```
+
+**0%**
+
 
 12. Now use `sapply` function to change the prior variance from `seq(0.05, 0.05, len = 100)` and observe how the probability changes by making a plot.
 
+```{r}
+prob.f <- function(i){
+  B <- 0.005217071^2/(0.005217071^2 + 0.01^2)
+  Pr_pY <- B*i + (1-B)*0.01895102
+}
+
+
+prob.f_2 <- function(i){
+  B <- 0.005217071^2/(0.005217071^2 + i^2)
+  Pr_pY <- B*i + (1-B)*0.01895102
+}
+
+
+results_1 <- data.frame(n= 1:100 , prob = sapply(seq(0.05, 0.05, len = 100), prob.f))
+results_2 <- data.frame(n = 1:100, prob = sapply(seq(0.05, by = 0.005, len = 100), prob.f))
+results_3 <- data.frame(n = 1:100, prob = sapply(seq(0.05, 0.05, len = 100), prob.f_2))
+
+
+ggplot(results_1) + geom_point(aes(n, prob))
+ggplot(results_2) + geom_point(aes(n, prob))
+ggplot(results_3) + geom_point(aes(n, prob))
+```
+
+what went wrong...?
 
 
 ## 16.8 Case study: election forecasting
@@ -1144,6 +1271,11 @@ polls <- polls_us_election_2016 %>%
 
 Now for each poll use the CLT to create a 95% confidence interval for the spread reported by each poll. Call the resulting object cis with columns lower and upper for the limits of the confidence intervals. Use the `select` function to keep the columns `state, startdate, end date, pollster, grade, spread, lower, upper`.
 
+```{r}
+cis <- polls %>% mutate(x_hat = (spread+1)/2) %>% mutate(se =  2 * sqrt(x_hat * (1 - x_hat) / samplesize)) %>% mutate(lower = spread - 1.96*se, upper = spread + 1.96*se) %>% select(state, startdate, enddate, pollster, grade, spread, lower, upper)
+```
+
+
 
 2. You can add the final result to the `cis` table you just created using the `right_join` function like this:
 
@@ -1158,29 +1290,134 @@ cis <- cis %>%
 
 Now determine how often the 95% confidence interval includes the actual result.
 
+```{r}
+kane <- function(i){
+  ifelse(between(cis$actual_spread[i], cis$lower[i], cis$upper[i]), "hit", "fail")
+}
+
+go_results <- sapply(1:nrow(cis), kane)
+mean(go_results == "hit")
+```
+
+**0.6625616**
+
 
 3. Repeat this, but show the proportion of hits for each pollster. Show only pollsters with more than 5 polls and order them from best to worst. Show the number of polls conducted by each pollster and the FiveThirtyEight grade of each pollster. Hint: use `n=n(), grade = grade[1]` in the call to summarize.
+
+```{r}
+cis_ <- cis %>% group_by(pollster) %>%
+  filter(n() >= 6)
+
+kane_ <- function(i){
+  ifelse(between(cis_$actual_spread[i], cis_$lower[i], cis_$upper[i]), "hit", "fail")
+}
+
+results <- sapply(1:nrow(cis_), kane_)
+
+cis_ <- data.frame(cis_, hit = results)
+k <- cis_%>% group_by(pollster) %>% summarize(h = mean(hit == "hit"))
+
+
+back <- cis_ %>% group_by(pollster) %>% summarize(n = n(), grade = grade[1])
+
+back <- back %>% left_join(k, by = "pollster")
+
+back[order(-k$h),]
+```
+
 
 
 4. Repeat exercise 3, but instead of pollster, stratify by state. Note that here we can’t show grades.
 
+```{r}
+cis_ <- cis %>% group_by(state) %>%
+  filter(n() >= 6)
+
+kane_ <- function(i){
+  ifelse(between(cis_$actual_spread[i], cis_$lower[i], cis_$upper[i]), "hit", "fail")
+}
+
+results <- sapply(1:nrow(cis_), kane_)
+
+cis_ <- data.frame(cis_, hit = results)
+
+k <- cis_%>% group_by(state) %>% summarize(h = mean(hit == "hit"))
+
+back <- cis_ %>% group_by(state) %>% summarize(n = n())
+
+back <- back %>% left_join(k, by = "state")
+
+back[order(-k$h),]
+```
+
+
 
 5. Make a barplot based on the result of exercise 4. Use `coord_flip`.
+
+```{r}
+great_results <- back[order(-k$h),]
+
+great_results %>% ggplot(aes(x = reorder(state, h), y = h)) + geom_col() + coord_flip()
+```
+
 
 
 6. Add two columns to the `cis` table by computing, for each poll, the difference between the predicted spread and the actual spread, and define a column `hit` that is true if the signs are the same. Hint: use the function `sign`. Call the object `resids`.
 
+```{r}
+resids <- cis %>% mutate(diff = spread - actual_spread) %>% mutate(hit = ifelse(sign(spread) == sign(actual_spread), "TRUE", "FALSE"))
+```
+
+
 
 7. Create a plot like in exercise 5, but for the proportion of times the sign of the spread agreed.
+
+```{r}
+resids <- resids %>% group_by(pollster) %>%
+  filter(n() >= 6)
+
+g <- resids %>% group_by(state) %>% summarize(h = mean(hit == "TRUE"))
+
+kill <- resids %>% group_by(state) %>% summarize(n = n())
+
+kill <- kill %>% left_join(g, by = "state")
+
+kill[order(-g$h),] %>% ggplot(aes(x = reorder(state, h), y = h)) + geom_col() + coord_flip()
+
+```
+
 
 
 8. In exercise 7, we see that for most states the polls had it right 100% of the time. For only 9 states did the polls miss more than 25% of the time. In particular, notice that in Wisconsin every single poll got it wrong. In Pennsylvania and Michigan more than 90% of the polls had the signs wrong. Make a histogram of the errors. What is the median of these errors?
 
+```{r}
+resids %>% ggplot(aes(diff)) + geom_histogram()
+median(resids$diff)
+```
+
+**0.0395**
+
 
 9. We see that at the state level, the median error was 3% in favor of Clinton. The distribution is not centered at 0, but at 0.03. This is the general bias we described in the section above. Create a boxplot to see if the bias was general to all states or it affected some states differently. Use `filter(grade %in% c("A+","A","A-","B+") | is.na(grade)))` to only include pollsters with high grades.
 
+```{r}
+resids %>% filter(grade %in% c("A+","A","A-","B+") | is.na(grade)) %>% group_by(state) %>% summarize(d = mean(diff)) %>% ggplot(aes(state, d)) +
+  geom_col()
+```
+
+
 
 10. Some of these states only have a few polls. Repeat exercise 9, but only include states with 5 good polls or more. Hint: use `group_by`, `filter` then `ungroup`. You will see that the West (Washington, New Mexico, California) underestimated Hillary’s performance, while the Midwest (Michigan, Pennsylvania, Wisconsin, Ohio, Missouri) overestimated it. In our simulation, we did not model this behavior since we added general bias, rather than a regional bias. Note that some pollsters may now be modeling correlation between similar states and estimating this correlation from historical data. To learn more about this, you can learn about random effects and mixed models.
+
+```{r}
+resids %>% filter(grade %in% c("A+","A","A-","B+") | is.na(grade)) %>% group_by(state) %>%  filter(n()>=5) %>% ungroup() %>%
+  group_by(state) %>% summarize(d = mean(diff)) %>% ggplot(aes(reorder(state, d), d)) +
+  geom_col()
+
+resids %>% filter(grade %in% c("A+","A","A-","B+") | is.na(grade)) %>% group_by(state) %>%  filter(n()>=5) %>% ungroup() %>%
+  group_by(state) %>% summarize(d = mean(diff)) %>% .$d %>% median()
+```
+
 
 
 
