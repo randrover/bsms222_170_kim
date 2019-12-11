@@ -110,23 +110,27 @@ great
 
 ***
 
-# *피드백 반영*
+# **피드백 반영**
 
 ### (1)plot A에서 어떤 label이 어떤 point에 해당하는지 보기 어려움.
 
 어떤 label에 어떤 point에 해당하는지 보다 명확히 하기 위해, label간의 거리를 벌렸다.
 label size를 줄이고, point size 또한 줄였다.
 
-_label과 point의 색을 같게 하여 그 관계를 명확히 함과 동시에 color blind friendly하며 서로 구분이 되는 15개의 point 색을 지정하는 것_은 label과 point가 또렷하게 보이지 않는 색이 있어 적용하지 않았다.
-_범례를 넣는 것_은, gene symbol이 15개로 너무 많아 가독성이 떨어진다고 판단하여 적용하지 않았다.
+**label과 point의 색을 같게 하여 그 관계를 명확히 함과 동시에 color blind friendly하며 서로 구분이 되는 15개의 point 색을 지정하는 것**은 label과 point가 또렷하게 보이지 않는 색이 있어 적용하지 않았다.
+
+**범례를 넣는 것**은, gene symbol이 15개로 너무 많아 가독성이 떨어진다고 판단하여 적용하지 않았다.
+
 
 ### (2)plot A에서, 어떤 기준으로 gene을 선택했는지에 대한 정보 부족.
 
 plot A의 title에 '(Genes with DD Frequency>5)' 를 추가하여, DD Frequency가 5보다 큰 gene을 선별했음을 명시했다.
 
+
 ### (3)plot B에서, frequency에 해당하는 actual number 정보 부족.
 
 geom_text(aes(label = n))를 이용해 actual number를 기입했다.
+
 
 ### (4)plot A, B 모두 title 크기 키우기.
 
