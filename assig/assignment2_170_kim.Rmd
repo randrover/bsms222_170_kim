@@ -1,0 +1,136 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#DDG2P 데이터
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(readr)
+library(ggrepel)
+library(cowplot)
+```
+
+
+## 주제 각 gene에 대한 developmental disorder 발생 빈도와 종류 및 pLI 분포
+
+`pLI`의 정의는 The probability of being loss-of-function intolerant (intolerant of both heterozygous and homozygous loss-of-function variants) 입니다.
+
+LOF(loss-of-function)을 견디지 못하는, 즉 해당 gene에 *LOF가 발생했을 때* *정상적으로 작동하지 않을 확률*을 말합니다.
+
+gene 하나 하나 보기에는 gene 수가 너무 많은 관계로, developmental disorder 발생 빈도가 높은 gene을 선별적으로 추출했습니다.
+
+gene의 pLI score과 developmental disorder 발생 빈도를 비교합니다.
+pLI score과 developmental disorder 발생 빈도 사이에 관계가 있음을 가설로 세웁니다. disorder 발생 빈도가 높은 gene일수록 LOF에 취약할 것이라 추측합니다.
+
+한 번 알아보도록 하겠습니다.
+
+***
+
+
+## 설명
+```{r}
+
+
+#DDG2P 데이터를 `DDG`에 저장합니다.
+DDG<- read.delim("DDG2P_24_9_2019.with_pLI.txt", sep='\t', header = T,)
+
+```
+
+``` {r}
+#DDG에서 developmental disorder 발생 빈도가 5를 초과하는 gene을 선별합니다.
+gg <- DDG %>% select(gene.symbol) %>% group_by(gene.symbol) %>% dplyr::count() %>% filter(n>5) %>% select(gene.symbol) %>% .$gene.symbol
+
+```
+
+```{r}
+#gene별로 developmental disorder 발생 빈도와 pLI를 비교합니다.
+#대체로 developmental disorder 발생 빈도가 높은 gene은 pLI 또한 1에 가깝다는 것을 알 수 있습니다.
+p1 <- DDG[DDG$gene.symbol %in% gg, ] %>% select(gene.symbol, disease.name, pLI) %>% group_by(gene.symbol, pLI) %>% dplyr::count() %>%
+  ggplot(aes(n, pLI)) +
+  geom_text_repel(aes(label = gene.symbol), show.legend = FALSE, size = 3, box.padding = 0.6) +
+  geom_point(size = 1) +
+  coord_fixed(ratio = 10) +
+  coord_flip() +
+  xlab("Developmental Disorder Frequency") +
+  ylab("pLI (Probability of being loss-of-function intolerant)") +
+  xlim(0, 11) +
+  ggtitle("Relationship between DD Frequency and pLI \n (Genes with DD Frequency>5)") +
+  theme(plot.title = element_text(size = 18, face = "bold", hjust = 0.5))
+
+
+```
+
+```{r}
+
+#가장 많은 gene과 연관된 developmental disorder 종류
+disease_freq <- DDG %>% select(disease.name) %>% group_by(disease.name) %>% dplyr::count()
+top_six_freq <- disease_freq[order(-disease_freq$n) ,] %>% head()
+##플로팅
+p2_1 <- top_six_freq %>%
+  ggplot(aes(reorder(disease.name, n), n)) +
+  geom_col(fill = "#e88eca") +
+  ylab("Occurrence Frequency in genes") +
+  xlab("Developmental Disorder") +
+  geom_text(aes(label = n), vjust = 0.5, hjust = 0.5, color = "black", size = 6) +
+  coord_fixed(ratio = 1/10) +
+  coord_flip() +
+  scale_x_discrete(labels = c("AUTISM", "LEIGH SYNDROME", "ZELLWEGER SYNDROME", "EPILEPTIC
+  ENCEPHALOPATHY", "INTELLECTUAL
+  DISABILITY", "AUTOSOMAL RECESSIVE
+                     MENTAL RETARDATION")) +
+  ggtitle("Top six Most Frequent Developmental Disorders \n (in all genes)") +
+  theme(plot.title = element_text(size = 17, face = "bold"))
+
+
+```
+
+```{r, fig.width = 8, fig.height = 12}
+
+
+#플롯 합치기
+great <- plot_grid(p1, p2_1, labels = c('A', 'B'), label_size = 10, ncol = 1)
+
+
+
+
+#높이를 길게 저장했습니다.
+ggsave("DDD2P.DiseaseFreqWithpLI.20191017.jpg", great, height = 12, width = 8)
+
+
+
+
+great
+```
+
+
+***
+
+# *피드백 반영*
+
+### (1)plot A에서 어떤 label이 어떤 point에 해당하는지 보기 어려움.
+
+어떤 label에 어떤 point에 해당하는지 보다 명확히 하기 위해, label간의 거리를 벌렸다.
+label size를 줄이고, point size 또한 줄였다.
+
+_label과 point의 색을 같게 하여 그 관계를 명확히 함과 동시에 color blind friendly하며 서로 구분이 되는 15개의 point 색을 지정하는 것_은 label과 point가 또렷하게 보이지 않는 색이 있어 적용하지 않았다.
+_범례를 넣는 것_은, gene symbol이 15개로 너무 많아 가독성이 떨어진다고 판단하여 적용하지 않았다.
+
+### (2)plot A에서, 어떤 기준으로 gene을 선택했는지에 대한 정보 부족.
+
+plot A의 title에 '(Genes with DD Frequency>5)' 를 추가하여, DD Frequency가 5보다 큰 gene을 선별했음을 명시했다.
+
+### (3)plot B에서, frequency에 해당하는 actual number 정보 부족.
+
+geom_text(aes(label = n))를 이용해 actual number를 기입했다.
+
+### (4)plot A, B 모두 title 크기 키우기.
+
+theme()의 plot.title을 이용해 제목의 크기를 키우고 굵게 표현했다.
+
+
+
