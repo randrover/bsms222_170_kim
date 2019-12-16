@@ -2,9 +2,6 @@
 title: "R Notebook"
 output: html_notebook
 ---
-```{r, echo=FALSE}
-knitr::opts_chunk$set(error = TRUE)
-```
 
 Q1.   From   the   dataset   `heights`   in   the   `dslabs`   package,   please   describe   the  distribution   of   male   and   female   heights.   If   you   pick   a   female   at   random,   what   is  the   probability   that   she   is   61   inches   or   shorter? 
  
