@@ -1180,6 +1180,8 @@ b. `pnorm((a - m)/s)`
 c. `pnorm((a - m)/s, m, s)`
 d. `pnorm(a)`
 
+답은 b였다... pnorm이 기본적으로 0, 1로 디폴트다...
+
 ```{r}
 pnorm((64 - m)/s, 0, 1)
 ```

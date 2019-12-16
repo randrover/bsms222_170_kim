@@ -398,6 +398,30 @@ sd(x_hat)
 
 A histogram and qq-plot confirm that the normal approximation is accurate as well:
 
+```{r}
+p1 <- data.frame(x_hat) %>% ggplot(aes(x = x_hat)) + geom_histogram(binwidth = 0.005, color = "black", fill = "gray")
+p2 <- data.frame(x_hat) %>% ggplot(aes(x = x_hat, y = x_hat)) + geom_point() + geom_abline(intercept = 0, slope = 1)
+plot_grid(p1, p2)
+```
+
+
+```{r}
+B <- 100
+x_hat <- replicate(B, {
+  x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
+  mean(x)
+})
+
+p3 <- data.frame(x_hat) %>% ggplot(aes(x = x_hat)) + geom_histogram(binwidth = 0.005, color = "black", fill = "gray")
+p4 <- data.frame(x_hat) %>% ggplot() + geom_qq(aes(sample = x_hat))+ geom_qq_line(aes(sample = x_hat))
+plot_grid(p3, p4)
+
+
+# B가 10, 100, 1000... normal distribution 같음..
+```
+
+
+
 (그래프)
 
 Of course, in real life we would never be able to run such an experiment because we don’t know $p$. But we could run it for various values of $p$ and $N$ and see that the theory does indeed work well for most values. You can easily do this by re-running the code above after changing `p` and `N`.
@@ -628,7 +652,12 @@ pnorm(-0.01/SE) + 1 - pnorm(0.01/SE)
 
 Confidence intervals are a very useful concept widely employed by data analysts. A version of these that are commonly seen come from the `ggplot` geometry `geom_smooth`. Here is an example using a temperature dataset available in R:
 
-(그래프)
+```{r}
+
+```
+
+
+
 
 In the Machine Learning part we will learn how the curve is formed, but for now consider the shaded area around the curve. This is created using the concept of confidence intervals.
 
@@ -753,9 +782,145 @@ mean(inside)
 ```
 (실제로 해보니 그렇더라..)
 
+```{r}
+inside <- replicate(B, {
+  x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
+  x_hat <- mean(x)
+  se_hat <- sqrt(x_hat * (1 - x_hat) / N)
+  return(c(x_hat, se_hat))
+})
+dim(inside)
+d <- t(inside)
+d <- as.data.frame(d) %>% mutate(start = V1 - 1.96 * V2, end = V1 + 1.96 * V2)
+#이렇게 between이 아니라 식을 써 줘야 한다..
+d <- d%>% mutate(hit_inside = ifelse(start<p & end>p, "YES", "NO")) %>% rename(x_hat = V1, se_hat = V2)
+
+```
+
+```{r}
+d<-d %>% mutate(n = seq(1, B))
+
+d[1:100,] %>% ggplot(aes(color = hit_inside)) + geom_point(aes(x=n, y=x_hat)) +
+geom_segment( aes(x=n, xend=n, y=start, yend=end)) +
+  coord_flip()
+
+
+d[1:100,] %>% ggplot(aes(x=x_hat, y=n, color = hit_inside)) + geom_point() +
+  geom_errorbarh(aes(xmax = start, xmin = end))
+
+```
+
+```{r}
+# N 클수록 샘플링 정확
+library(dslabs)
+
+# heights 정보 분리
+heights_w <- heights %>% filter(sex == "Female")
+p_w <- mean(heights_w$height)
+heights_m <- heights %>% filter(sex == "Male")
+p_m <- mean(heights_m$height)
+
+# 샘플링 function
+kelk <- function(){
+  x <- sample(heights_w$height, size = N, replace = FALSE)
+  x_hat <- mean(x)
+  se_hat <- sd(x)/sqrt(N)
+  return(c(x_hat, se_hat))
+}
+
+# N 50, B 1000, W
+N <- 50
+B <- 1000
+d <- replicate(B, {
+  x <- sample(heights_w$height, size = N, replace = FALSE)
+  x_hat <- mean(x)
+  se_hat <- sd(x)/sqrt(N)
+  return(c(x_hat, se_hat))
+})
+dim(d)
+d <- t(d)
+d <- as.data.frame(d) %>% mutate(n = seq(1,B)) %>% rename(x_hat = V1, se_hat = V2) %>%
+  mutate(start = x_hat - 1.96 * se_hat, end = x_hat + 1.96 * se_hat) %>%
+  mutate(hit_inside = ifelse(start<p_w & end>p_w, "YES", "NO"))
+
+d[1:100,] %>% ggplot(aes(x=x_hat, y=n, color = hit_inside)) + geom_point() +
+  geom_errorbarh(aes(xmax = start, xmin = end))
+```
+
+```{r}
+grape <- function(N, B){
+  d <- replicate(B, {
+  x <- sample(heights_w$height, size = N, replace = FALSE)
+  x_hat <- mean(x)
+  se_hat <- sd(x)/sqrt(N)
+  return(c(x_hat, se_hat))
+})
+d <- t(d)
+d <- as.data.frame(d) %>% mutate(n = seq(1,B)) %>% rename(x_hat = V1, se_hat = V2) %>%
+  mutate(start = x_hat - 1.96 * se_hat, end = x_hat + 1.96 * se_hat) %>%
+  mutate(hit_inside = ifelse(start<p_w & end>p_w, "YES", "NO"))
+  p <- d[1:100,] %>% ggplot(aes(x=x_hat, y=n, color = hit_inside)) + geom_point() +
+  geom_errorbarh(aes(xmax = start, xmin = end))
+  return(p)
+}
+
+p <- d[1:100,] %>% ggplot(aes(x=x_hat, y=n, color = hit_inside)) + geom_point() +
+  geom_errorbarh(aes(xmax = start, xmin = end))
+# N 50, B 1000
+grape(50, 1000)
+# N 100, B 1000
+grape(100, 1000)
+# N 200, B 1000
+grape(200, 1000)
+p2 <- p
+# N
+grape(200, 500)
+p3 <- p
+grape(200, 1000)
+p4 <- p
+grape(200, 10000)
+p5 <-p
+
+plot_grid(p1, p2, p3, p4, p5)
+```
+
+
 The following plot shows the first 100 confidence intervals. In this case, we created the simulation so the black line denotes the parameter we are trying to estimate:
 
-(그래프)
+```{r}
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+```
+
+
+```{r}
+B<-10000
+n<-2000
+p<-0.4
+intervals <- replicate(B, {
+  x <- sample(c(0,1), size = n, replace = TRUE, prob = c(1-p, p))
+  x_hat <- mean(x)
+  se_hat <- sqrt(x_hat * (1 - x_hat) / n)
+  start = x_hat - 1.96 * se_hat
+  end = x_hat + 1.96 * se_hat
+  hit = ifelse(between(p, x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat), "hit", "fail")
+  c(start, end, hit)
+})
+
+head(intervals[1,])
+
+intervals_d <- data.frame(n = 1:10000, start = intervals[1,], end = intervals[2,], hit = intervals[3,])
+
+
+head(intervals_d, 100) %>% ggplot(aes(x = n, ymin = start, ymax = end, color = inside)) +
+  geom_errorbarh()
+
+
+    geom_point( aes(x=n, y=start), color=rgb(0.2,0.7,0.1,0.5), size=1 ) +
+  geom_point( aes(x=n, y=end), color=rgb(0.7,0.2,0.1,0.5), size=1 ) +
+  coord_flip()
+```
 
 
 

@@ -619,7 +619,9 @@ Y
 14. What is the standard error of $Y$?
 
 ```{r}
-18 * sqrt(18)/19 
+18 * sqrt(18)/19/sqrt(1000)
+#원래 루트n나누는 게 보통이고, 거기에 n곱하므로 정리하면 분자에 루트n곱하는 게 되겠지?
+# 그런데 n을 안 곱할 거니까 처음의 나누니 루트n만 남은 거니까??
 ```
 
 **4.019344**
@@ -1104,3 +1106,25 @@ d. The number of Monte Carlo simulations.
 
 
 done!
+
+
+
+```{r}
+set.seed(1)
+p <- 0.335
+B <- 10000
+bbc <- function(){
+	draws <- sample(c(2, -1), 2000, prob = c(p, 1-p) , replace = TRUE)
+	sum(draws)
+}
+outcomes <- replicate( B, bbc() )
+```
+```{r}
+2000*(p*2 + (1-p)*(-1))
+mean(outcomes)
+```
+
+```{r}
+sqrt(2000)*abs(-1-2)*sqrt(p*(1-p))
+```
+
