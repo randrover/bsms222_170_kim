@@ -1,0 +1,171 @@
+---
+title: "R Notebook"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+---
+```{r, echo=FALSE}
+knitr::opts_chunk$set(error = TRUE)
+```
+
+Q1.   From   the   dataset   `heights`   in   the   `dslabs`   package,   please   describe   the  distribution   of   male   and   female   heights.   If   you   pick   a   female   at   random,   what   is  the   probability   that   she   is   61   inches   or   shorter? 
+ 
+```{r}
+library(tidyr)
+library(dslabs)
+data(heights)
+library(cowplot)
+```
+
+
+```{r}
+#남자, 여자의 키를 분류하고 따로 저장합니다.
+#각각의 평균도 저장합니다.
+heights_w <- heights %>% filter(sex == "Female")
+p_w <- mean(heights_w$height)
+heights_m <- heights %>% filter(sex == "Male")
+p_m <- mean(heights_m$height)
+
+#여자 키 plot
+plot_w <- heights_w %>% ggplot() +
+  geom_histogram(aes(x = height), binwidth = 1, color = "black", fill = "grey") +
+  geom_vline(xintercept = p_w, color = "red", size=1)
+
+#남자 키 plot
+plot_m <- heights_m %>% ggplot() +
+  geom_histogram(aes(x = height), binwidth = 1, color = "black", fill = "grey") +
+  geom_vline(xintercept = p_m, color = "red", size=1)
+
+plot_grid(plot_w, plot_m)
+```
+
+< 남자, 여자 모두 평균을 중심으로 뒤집은 종 모양으로 분포해 있음을 알 수 있습니다. >
+
+# the probability that a female I picked at random is 61 inches or shorter
+
+```{r}
+w_mean <- mean(heights_w$height)
+w_sd <- sd(heights_w$height)
+pnorm(61, w_mean, w_sd) * 100
+```
+
+**14.74261 %**
+
+< 여자의 키 평균과 standard deviation을 구한 후, pnorm을 이용해 61인치보다 작거나 같을 확률을 구합니다. 그리고 100을 곱해 %으로 치환합니다. >
+
+
+
+
+
+Q2.   For   American   Roulette,   there   are   19   reds,   16   blacks   and   3   greens.   The   payout  for   winning   on   green   is   15   dollars.   You   create   a   random   variable   that   is   the   sum   of  your   winnings   after   betting   on   green   1000   times.   Start   your   code   by   setting   the  seed   to   1.   Describe   your   random   variable   (e.g.   the   expected   value,   the   standard  error).   Then,   create   a   Monte   Carlo   simulation   that   generates   1,000   outcomes   of   a  random   variable,   and   then   describe   your   result.
+
+red 19개, black 16개, green 3개.
+green이 15달러.
+1000번 배팅. sum 이 변수. 1000개 outcomes.
+
+```{r}
+#green이 나올 확률
+p <- 3 / ( 19 + 16 + 3 )
+
+B <- 1000
+n <- 1000
+
+#EX
+n*(p*15 + (1-p)*(-1))
+
+#SE
+sqrt(n)*abs(15-(-1))*sqrt(p*(1-p))
+
+#번 돈의 sum
+set.seed(1)
+bbq <- function(){
+  draws <- sample(c(15, -1), n, prob = c(p, 1-p) , replace = TRUE)
+  sum(draws)
+}
+outcomes <- replicate( B, bbq() )
+
+#번 돈의 평균
+o_mean <- mean(outcomes)
+
+d_outcomes <- data.frame(outcomes)
+
+d_outcomes %>% ggplot() +
+  geom_histogram(aes(x=outcomes), binwidth = 15, color = "black", fill = "grey") +
+  geom_vline(xintercept = o_mean, color = "red", size=1)
+```
+
+expected value : 263.1579
+standard error : 136.4366
+
+< 번 돈, outcome이 평균을 중심으로 뒤집은 종 모양으로 분포해 있음을 알 수 있습니다. 분포가 종 모양에 정확히 들어맞지는 않으나, 가운데가 가장 높고 양 말단으로 갈수록 count가 줄어드는 것을 볼 수 있습니다. >
+< 분포를 알아보기 쉬운 히스토그램을 사용했습니다.)
+
+
+
+
+Q3.   From   the   poll   example,   we   will   create   a   Monte   Carlo   simulation   for   p   =   0.45. 
+ You   will   compare   the   sampling   size   (N)   for   10,   1000,   and   the   repeat   size   (B)   for 
+ 100,   10000.   So   you   should   have   four   combinations   (10   N   x   100   B,   1000   N   x   100   B, 
+ 10   N   x   10000   B,   1000   N   x   10000   B).   Please   describe   your   Monte   Carlo   simulation 
+ results,   and   compare   four   combinations.
+
+N이 10, 1000일 때
+B이 100, 10000일 때
+
+```{r}
+p <- 0.45
+
+# N과 B를 대입할 함수 만듭니다.
+grape <- function(N, B){
+  d <- replicate(B, {
+  x <- sample(c(1, 0), size = N, prob = c(p, 1-p), replace = TRUE)
+  x_hat <- mean(x)
+  se_hat <- sd(x)/sqrt(N)
+  return(c(x_hat, se_hat))
+})
+d <- t(d)
+d <- as.data.frame(d) %>% mutate(n = seq(1,B)) %>% rename(x_hat = V1, se_hat = V2) %>%
+  mutate(start = x_hat - 1.96 * se_hat, end = x_hat + 1.96 * se_hat) %>%
+  mutate(hit_inside = ifelse(start<p & end>p, "YES", "NO"))
+  p <- d[1:100,] %>% ggplot(aes(x=x_hat, y=n, color = hit_inside)) + geom_point() +
+  geom_errorbarh(aes(xmax = start, xmin = end))
+  return(p)
+}
+```
+
+```{r}
+#N 10, B 100
+grape(10, 100)
+```
+
+< confidence interval에 들어가지 못한 것이 6 개 보입니다.)
+
+```{r}
+#N 10, B 10000
+grape(10, 10000)
+```
+
+<confidence interval에 들어가지 못한 것이 4개 보입니다.>
+
+```{r}
+#N 1000, B 100
+grape(1000, 100)
+```
+
+<confidence interval에 들어가지 못한 것이 5개 보입니다.>
+
+```{r}
+#N 1000, B 10000
+grape(1000, 10000)
+```
+
+<confidence interval에 들어가지 못한 것이 4개 보입니다.>
+
+
+
+p가 들어가는 confidence interval을 만들 확률이 N과 B가 클수록 크다는 것을 알 수 있습니다.
+
+N과 B가 둘 다 작을 때 error가 가장 많이 일어났습니다.
+
+geom_errorbarh를 사용해, error가 난 것과 나지 않은 것을 보기 쉽게 구분했습니다.
